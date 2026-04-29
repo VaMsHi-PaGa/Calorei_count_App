@@ -28,9 +28,10 @@ app.add_middleware(
         "http://127.0.0.1:3001",
         "http://51.77.145.52:3000",
         "http://51.77.145.52:3001",
+        "*",  # Allow all origins for now to debug CORS
     ],
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
