@@ -1,6 +1,6 @@
-from datetime import date, datetime, time, timezone
+from datetime import datetime, time, timezone
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends
 from sqlalchemy import desc, func
 from sqlalchemy.orm import Session
 

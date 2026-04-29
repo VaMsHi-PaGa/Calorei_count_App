@@ -8,7 +8,6 @@ from dotenv import load_dotenv
 load_dotenv()
 
 from app.db.database import Base, engine
-from app.models import FoodLog, User, WeightLog, UserGoal
 from app.routes import auth, dashboard, food_log, users, weight_log, goals, reports
 
 

@@ -5,7 +5,7 @@ Provides functions to calculate historical metrics, trends, and statistics
 for weight tracking, food logging, and goal progress.
 """
 
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 

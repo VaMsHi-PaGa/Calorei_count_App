@@ -8,8 +8,7 @@ Analyzes foods based on:
 - AI-powered analysis via Ollama (optional)
 """
 
-from datetime import date, datetime, timedelta
-import json
+from datetime import date, datetime
 import logging
 from typing import Optional
 from sqlalchemy.orm import Session
@@ -91,11 +90,9 @@ def analyze_food_quality(
     quality_score = 80  # Start high, deduct for issues
 
     # Calculate metrics if data provided
+    macro_sum = 0
     if calories and (protein or carbs or fat):
-        macros_provided = True
         macro_sum = (protein or 0) + (carbs or 0) + (fat or 0)
-    else:
-        macros_provided = False
 
     # Rule 1: Caloric density (high = problematic)
     if calories and macro_sum > 0:

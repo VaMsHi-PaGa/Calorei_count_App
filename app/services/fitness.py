@@ -84,10 +84,9 @@ def calculate_nutritional_targets(
     protein_target = round(current_weight * protein_multiplier, 1)
 
     # Macronutrient breakdown (% of calories)
-    # Protein: 30%, Carbs: 45%, Fat: 25% (balanced macro split)
+    # Fat: 25%, Carbs: 45%, Protein: 30%
     fat_percent = 0.25
     carbs_percent = 0.45
-    protein_percent = 0.30
 
     # Convert to grams
     fat_target = round((calorie_target * fat_percent) / 9, 1)  # 9 cal/g

@@ -16,11 +16,10 @@ import logging
 from typing import Optional
 from sqlalchemy.orm import Session
 
-from app.models import User, UserGoal, WeightLog, FoodLog
+from app.models import User, UserGoal, WeightLog
 from app.services.aggregation import (
     get_logging_stats,
     get_average_metrics,
-    get_best_worst_days,
     get_food_frequency,
     get_weight_trend,
     calculate_consistency_score,

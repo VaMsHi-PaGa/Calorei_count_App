@@ -5,7 +5,6 @@ Endpoints for generating fitness reports, accessing suggestions, and exporting d
 """
 
 from datetime import date, datetime, timedelta, timezone
-from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from fastapi.responses import JSONResponse, Response
 import logging
@@ -14,7 +13,7 @@ from sqlalchemy.orm import Session
 from app.db.database import get_db
 from app.models import User
 from app.middleware.auth import get_current_user
-from app.services.reports import generate_report, Report, MIN_LOGGING_DAYS
+from app.services.reports import generate_report, MIN_LOGGING_DAYS
 from app.services.suggestions import get_suggestions
 
 logger = logging.getLogger(__name__)
@@ -247,13 +246,13 @@ def report_health(db: Session = Depends(get_db), current_user: User = Depends(ge
     start_date = end_date - timedelta(days=7)
 
     try:
-        stats = get_logging_stats(db, current_user.id, start_date, end_date)
+        get_logging_stats(db, current_user.id, start_date, end_date)
         aggregation_status = "ok"
     except Exception as e:
         aggregation_status = f"error: {str(e)}"
 
     try:
-        suggestions = get_suggestions(db, current_user.id, days=7, use_ai=False)
+        get_suggestions(db, current_user.id, days=7, use_ai=False)
         suggestions_status = "ok"
     except Exception as e:
         suggestions_status = f"error: {str(e)}"
