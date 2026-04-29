@@ -50,9 +50,7 @@ FORMAT:
         response.raise_for_status()
         payload = response.json()
         raw_text = payload["response"]
-        print("RAW:", raw_text)
         parsed = _parse_macro_json(raw_text)
-        print("PARSED:", parsed)
         return _normalize_estimate(parsed)
     except (requests.RequestException, KeyError, ValueError, TypeError, json.JSONDecodeError):
         return DEFAULT_ESTIMATE.copy()

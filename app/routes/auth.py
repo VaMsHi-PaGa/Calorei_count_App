@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import IntegrityError
@@ -6,6 +6,8 @@ from sqlalchemy.orm import Session
 
 from app.db.database import get_db
 from app.models.user import User
+from pydantic import BaseModel
+
 from app.schemas import (
     LoginPayload,
     PasswordResetConfirm,
@@ -102,15 +104,14 @@ def login(payload: LoginPayload, db: Session = Depends(get_db)):
     )
 
 
+class RefreshPayload(BaseModel):
+    refresh_token: str
+
+
 @router.post("/refresh", response_model=TokenResponse)
-def refresh(payload: dict, db: Session = Depends(get_db)):
+def refresh(payload: RefreshPayload, db: Session = Depends(get_db)):
     """Refresh access token using refresh token."""
-    refresh_token = payload.get("refresh_token")
-    if not refresh_token:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail="refresh_token required",
-        )
+    refresh_token = payload.refresh_token
 
     # Verify refresh token
     user_id = verify_token(refresh_token, token_type="refresh")
@@ -153,7 +154,7 @@ def forgot_password(payload: PasswordResetRequest, db: Session = Depends(get_db)
     # Generate reset token with 1-hour expiry
     reset_token = generate_reset_token()
     user.password_reset_token = reset_token
-    user.password_reset_expires = datetime.utcnow() + timedelta(hours=1)
+    user.password_reset_expires = datetime.now(timezone.utc) + timedelta(hours=1)
 
     db.commit()
 
@@ -176,7 +177,7 @@ def reset_password(payload: PasswordResetConfirm, db: Session = Depends(get_db))
         )
 
     # Check if token is expired
-    if not user.password_reset_expires or datetime.utcnow() > user.password_reset_expires:
+    if not user.password_reset_expires or datetime.now(timezone.utc) > user.password_reset_expires:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Reset token expired",

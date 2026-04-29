@@ -28,8 +28,9 @@ def get_dashboard(current_user: User = Depends(get_current_user), db: Session = 
 
     goal = db.query(UserGoal).filter(UserGoal.user_id == current_user.id).first()
 
-    today_start = datetime.combine(date.today(), time.min, tzinfo=timezone.utc)
-    today_end = datetime.combine(date.today(), time.max, tzinfo=timezone.utc)
+    today_utc = datetime.now(timezone.utc).date()
+    today_start = datetime.combine(today_utc, time.min, tzinfo=timezone.utc)
+    today_end = datetime.combine(today_utc, time.max, tzinfo=timezone.utc)
     totals = (
         db.query(
             func.coalesce(func.sum(FoodLog.calories), 0),

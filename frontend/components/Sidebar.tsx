@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
 import {
   AnalyticsIcon,
   DashboardIcon,
@@ -35,6 +36,16 @@ const NAV_ITEMS: NavItem[] = [
   { href: "/settings", label: "Settings", icon: SettingsIcon },
 ];
 
+const navContainer = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.055, delayChildren: 0.1 } },
+};
+
+const navItemVariant = {
+  hidden: { opacity: 0, x: -12 },
+  show: { opacity: 1, x: 0, transition: { duration: 0.3 } },
+};
+
 type SidebarProps = {
   user: User | null;
   onLogout: () => void;
@@ -46,21 +57,37 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
   const displayName = user?.preferred_name || user?.first_name || user?.email?.split("@")[0] || "User";
 
   return (
-    <aside className="hidden lg:flex w-64 flex-col bg-slate-950 border-r border-slate-800/50 min-h-screen sticky top-0 shadow-2xl shadow-cyan-900/5 z-50">
+    <motion.aside
+      className="hidden lg:flex w-64 flex-col border-r border-slate-800/60 min-h-screen sticky top-0 z-50"
+      style={{ background: "rgba(2,8,23,0.85)", backdropFilter: "blur(24px)" }}
+      initial={{ x: -20, opacity: 0 }}
+      animate={{ x: 0, opacity: 1 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+    >
       {/* Logo */}
-      <div className="px-6 py-6 border-b border-slate-800/50">
-        <div className="flex items-center gap-2">
-          <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center">
+      <div className="px-6 py-6 border-b border-slate-800/60">
+        <motion.div
+          className="flex items-center gap-2"
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2, duration: 0.4 }}
+        >
+          <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-cyan-400 to-violet-500 flex items-center justify-center shadow-lg shadow-cyan-500/25">
             <span className="text-white text-lg font-black">F</span>
           </div>
-          <span className="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-cyan-300 tracking-tight">
+          <span className="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-violet-400 tracking-tight">
             FitTrack
           </span>
-        </div>
+        </motion.div>
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+      <motion.nav
+        className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto"
+        variants={navContainer}
+        initial="hidden"
+        animate="show"
+      >
         {NAV_ITEMS.map((item) => {
           const active =
             item.href === "/"
@@ -68,26 +95,43 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
               : pathname.startsWith(item.href);
           const Icon = item.icon;
           return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-300 ${
-                active
-                  ? "bg-gradient-to-r from-cyan-500/10 to-transparent text-white border-r-2 border-cyan-500"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-900/50"
-              }`}
-            >
-              <Icon className="h-5 w-5 shrink-0" />
-              <span>{item.label}</span>
-            </Link>
+            <motion.div key={item.href} variants={navItemVariant}>
+              <Link
+                href={item.href}
+                className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors duration-200 group ${
+                  active
+                    ? "bg-gradient-to-r from-cyan-500/15 to-violet-500/5 text-white border border-cyan-500/20"
+                    : "text-slate-400 hover:text-slate-100 hover:bg-slate-800/50"
+                }`}
+              >
+                <Icon
+                  className={`h-5 w-5 shrink-0 transition-colors duration-200 ${
+                    active ? "text-cyan-400" : "group-hover:text-cyan-400"
+                  }`}
+                />
+                <span>{item.label}</span>
+                {active && (
+                  <motion.div
+                    layoutId="active-pill"
+                    className="ml-auto h-1.5 w-1.5 rounded-full bg-cyan-400"
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  />
+                )}
+              </Link>
+            </motion.div>
           );
         })}
-      </nav>
+      </motion.nav>
 
       {/* User profile */}
-      <div className="px-3 pb-4 pt-2 border-t border-slate-800/50">
-        <div className="flex items-center gap-3 px-3 py-3 rounded-lg bg-slate-900/50 border border-slate-800/50">
-          <div className="h-9 w-9 rounded-full bg-gradient-to-br from-cyan-400 to-cyan-600 flex items-center justify-center text-white text-sm font-bold shrink-0">
+      <motion.div
+        className="px-3 pb-4 pt-2 border-t border-slate-800/60"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.5, duration: 0.35 }}
+      >
+        <div className="flex items-center gap-3 px-3 py-3 rounded-xl bg-slate-900/60 border border-slate-800/60 backdrop-blur-sm">
+          <div className="h-9 w-9 rounded-full bg-gradient-to-br from-cyan-400 to-violet-500 flex items-center justify-center text-white text-sm font-bold shrink-0 shadow-md shadow-cyan-500/20">
             {initial}
           </div>
           <div className="min-w-0 flex-1">
@@ -96,16 +140,18 @@ export function Sidebar({ user, onLogout }: SidebarProps) {
             </p>
             <p className="text-xs text-slate-400 truncate">{user?.email ?? ""}</p>
           </div>
-          <button
+          <motion.button
             onClick={onLogout}
-            className="text-slate-400 hover:text-cyan-400 transition-colors p-1.5 rounded-lg hover:bg-slate-800/50"
+            className="text-slate-400 hover:text-cyan-400 transition-colors p-1.5 rounded-lg hover:bg-slate-800/60"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
             aria-label="Log out"
             title="Log out"
           >
             <LogoutIcon className="h-4 w-4" />
-          </button>
+          </motion.button>
         </div>
-      </div>
-    </aside>
+      </motion.div>
+    </motion.aside>
   );
 }

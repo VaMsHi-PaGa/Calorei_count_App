@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 const backendUrl = process.env.FASTAPI_URL ?? "http://localhost:8000";
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   async headers() {
     return [
       {

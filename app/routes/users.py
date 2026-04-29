@@ -7,13 +7,17 @@ from app.db.database import get_db
 from app.middleware.auth import get_current_user
 from app.models.user import User
 from app.schemas import UserCreate, UserRead
+from app.services.auth import hash_password
 
 router = APIRouter(prefix="/users", tags=["users"])
 
 
 @router.post("", response_model=UserRead, status_code=status.HTTP_201_CREATED)
 def create_user(payload: UserCreate, db: Session = Depends(get_db)):
-    user = User(**payload.model_dump())
+    data = payload.model_dump()
+    plain_password = data.pop("password")
+    data["password_hash"] = hash_password(plain_password)
+    user = User(**data)
     db.add(user)
 
     try:
@@ -90,8 +94,7 @@ def delete_user(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    # Only allow users to delete themselves or admin to delete any user
-    if user_id != current_user.id and current_user.id != 1:  # Assuming ID 1 is admin
+    if user_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Cannot delete other user's data")
 
     user = db.get(User, user_id)

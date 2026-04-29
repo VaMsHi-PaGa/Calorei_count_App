@@ -3,7 +3,7 @@ Authentication service for JWT token management and password hashing.
 """
 
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 import secrets
 
@@ -38,7 +38,7 @@ def create_access_token(user_id: int, expires_delta: Optional[timedelta] = None)
     if expires_delta is None:
         expires_delta = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
 
-    expire = datetime.utcnow() + expires_delta
+    expire = datetime.now(timezone.utc) + expires_delta
     to_encode = {"sub": str(user_id), "type": "access", "exp": expire}
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
@@ -49,7 +49,7 @@ def create_refresh_token(user_id: int, expires_delta: Optional[timedelta] = None
     if expires_delta is None:
         expires_delta = timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES)
 
-    expire = datetime.utcnow() + expires_delta
+    expire = datetime.now(timezone.utc) + expires_delta
     to_encode = {"sub": str(user_id), "type": "refresh", "exp": expire}
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt

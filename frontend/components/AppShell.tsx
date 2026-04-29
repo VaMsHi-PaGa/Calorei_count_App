@@ -1,10 +1,12 @@
 "use client";
 
 import type { ReactNode } from "react";
+import { motion } from "framer-motion";
 import { Sidebar } from "./Sidebar";
 import { MobileNav } from "./MobileNav";
 import { LoginScreen } from "./LoginScreen";
 import { Spinner } from "./ui/Spinner";
+import { AuroraBackground } from "./AuroraBackground";
 import { useUser } from "./UserProvider";
 
 type AppShellProps = {
@@ -36,10 +38,18 @@ export function AppShell({ children }: AppShellProps) {
         <MobileNav onLogout={logout}>{children}</MobileNav>
       </div>
 
-      {/* Desktop Layout (hidden on smaller screens) */}
-      <div className="hidden lg:flex min-h-screen bg-slate-950">
+      {/* Desktop Layout */}
+      <div className="hidden lg:flex min-h-screen bg-slate-950 relative">
+        <AuroraBackground />
         <Sidebar user={user} onLogout={logout} />
-        <main className="flex-1 min-w-0 bg-slate-950">{children}</main>
+        <motion.main
+          className="flex-1 min-w-0 relative z-10"
+          initial={{ opacity: 0, x: 16 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.35, ease: "easeOut" }}
+        >
+          {children}
+        </motion.main>
       </div>
     </>
   );
