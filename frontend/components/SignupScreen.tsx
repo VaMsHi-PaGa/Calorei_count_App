@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import { Card } from "./ui/Card";
 import { Button } from "./ui/Button";
 import { Input } from "./ui/Input";
 import { Spinner } from "./ui/Spinner";
 import { useUser } from "./UserProvider";
+import { AuthBackground } from "./AuthBackground";
 
 export function SignupScreen() {
   const router = useRouter();
@@ -36,7 +38,6 @@ export function SignupScreen() {
     e.preventDefault();
     setLocalError("");
 
-    // Validation
     if (!formData.email.trim()) {
       setLocalError("Please enter your email.");
       return;
@@ -84,30 +85,38 @@ export function SignupScreen() {
   const message = localError || error;
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-slate-50 via-white to-emerald-50 py-8">
-      <div className="w-full max-w-sm">
+    <div className="relative min-h-screen flex items-center justify-center px-4 py-8">
+      <AuthBackground />
+
+      <motion.div
+        className="relative z-10 w-full max-w-sm"
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+      >
+        {/* Logo + heading */}
         <div className="text-center mb-6">
-          <div className="inline-flex items-center gap-2 mb-3">
-            <div className="h-10 w-10 rounded-xl bg-emerald-600 flex items-center justify-center">
+          <motion.div
+            className="inline-flex items-center gap-2 mb-3"
+            initial={{ opacity: 0, scale: 0.85 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+          >
+            <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-emerald-500 to-cyan-500 flex items-center justify-center shadow-lg shadow-emerald-500/30">
               <span className="text-white text-xl font-black">F</span>
             </div>
-            <span className="text-2xl font-black text-slate-900 tracking-tight">
-              FitTrack
-            </span>
-          </div>
-          <h1 className="text-2xl font-bold text-slate-900">Get started</h1>
-          <p className="text-sm text-slate-600 mt-1">
+            <span className="text-2xl font-black text-white tracking-tight">FitTrack</span>
+          </motion.div>
+          <h1 className="text-2xl font-bold text-white">Get started</h1>
+          <p className="text-sm text-slate-400 mt-1">
             Create an account to track your fitness journey
           </p>
         </div>
 
-        <Card className="p-6">
+        <Card className="p-6 backdrop-blur-xl bg-slate-900/70 border border-slate-700/60 shadow-2xl shadow-black/40">
           <form onSubmit={handleSubmit} className="space-y-3">
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-slate-700 mb-1.5"
-              >
+              <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-1.5">
                 Email
               </label>
               <Input
@@ -125,10 +134,7 @@ export function SignupScreen() {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label
-                  htmlFor="firstName"
-                  className="block text-sm font-medium text-slate-700 mb-1.5"
-                >
+                <label htmlFor="firstName" className="block text-sm font-medium text-slate-300 mb-1.5">
                   First Name
                 </label>
                 <Input
@@ -142,10 +148,7 @@ export function SignupScreen() {
                 />
               </div>
               <div>
-                <label
-                  htmlFor="lastName"
-                  className="block text-sm font-medium text-slate-700 mb-1.5"
-                >
+                <label htmlFor="lastName" className="block text-sm font-medium text-slate-300 mb-1.5">
                   Last Name
                 </label>
                 <Input
@@ -161,11 +164,8 @@ export function SignupScreen() {
             </div>
 
             <div>
-              <label
-                htmlFor="preferredName"
-                className="block text-sm font-medium text-slate-700 mb-1.5"
-              >
-                Preferred Name (Optional)
+              <label htmlFor="preferredName" className="block text-sm font-medium text-slate-300 mb-1.5">
+                Preferred Name <span className="text-slate-500">(optional)</span>
               </label>
               <Input
                 id="preferredName"
@@ -179,11 +179,8 @@ export function SignupScreen() {
             </div>
 
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-slate-700 mb-1.5"
-              >
-                Password (min 8 characters)
+              <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-1.5">
+                Password <span className="text-slate-500">(min 8 characters)</span>
               </label>
               <div className="relative">
                 <Input
@@ -198,7 +195,7 @@ export function SignupScreen() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-700 text-sm"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-300 text-sm"
                 >
                   {showPassword ? "Hide" : "Show"}
                 </button>
@@ -206,10 +203,7 @@ export function SignupScreen() {
             </div>
 
             <div>
-              <label
-                htmlFor="confirm-password"
-                className="block text-sm font-medium text-slate-700 mb-1.5"
-              >
+              <label htmlFor="confirm-password" className="block text-sm font-medium text-slate-300 mb-1.5">
                 Confirm Password
               </label>
               <Input
@@ -225,10 +219,7 @@ export function SignupScreen() {
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label
-                  htmlFor="height"
-                  className="block text-sm font-medium text-slate-700 mb-1.5"
-                >
+                <label htmlFor="height" className="block text-sm font-medium text-slate-300 mb-1.5">
                   Height (cm)
                 </label>
                 <Input
@@ -242,12 +233,8 @@ export function SignupScreen() {
                   disabled={loading}
                 />
               </div>
-
               <div>
-                <label
-                  htmlFor="age"
-                  className="block text-sm font-medium text-slate-700 mb-1.5"
-                >
+                <label htmlFor="age" className="block text-sm font-medium text-slate-300 mb-1.5">
                   Age
                 </label>
                 <Input
@@ -264,10 +251,7 @@ export function SignupScreen() {
             </div>
 
             <div>
-              <label
-                htmlFor="gender"
-                className="block text-sm font-medium text-slate-700 mb-1.5"
-              >
+              <label htmlFor="gender" className="block text-sm font-medium text-slate-300 mb-1.5">
                 Gender
               </label>
               <select
@@ -276,7 +260,7 @@ export function SignupScreen() {
                 value={formData.gender}
                 onChange={handleChange}
                 disabled={loading}
-                className="w-full px-3 py-2 border border-slate-200 rounded-lg text-slate-900 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:bg-slate-50 disabled:text-slate-500"
+                className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent disabled:opacity-50"
               >
                 <option value="male">Male</option>
                 <option value="female">Female</option>
@@ -285,7 +269,7 @@ export function SignupScreen() {
             </div>
 
             {message && (
-              <div className="p-3 bg-rose-50 border border-rose-200 rounded-lg text-rose-700 text-sm">
+              <div className="p-3 bg-rose-950/30 border border-rose-900/50 rounded-lg text-rose-300 text-sm">
                 {message}
               </div>
             )}
@@ -313,19 +297,19 @@ export function SignupScreen() {
               )}
             </Button>
 
-            <p className="text-center text-xs text-slate-600">
+            <p className="text-center text-xs text-slate-400">
               Already have an account?{" "}
               <button
                 type="button"
                 onClick={() => router.push("/login")}
-                className="text-emerald-600 hover:text-emerald-700 font-medium"
+                className="text-cyan-400 hover:text-cyan-300 font-medium"
               >
                 Sign in
               </button>
             </p>
           </form>
         </Card>
-      </div>
+      </motion.div>
     </div>
   );
 }
