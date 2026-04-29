@@ -209,7 +209,10 @@
       "Bash(git commit -m 'Display preferred name in TopBar and Sidebar *)",
       "Bash(curl -s http://51.77.145.52:8000/auth/login -X POST -H 'Content-Type: application/json' -d '{\"email\":\"test@test.com\",\"password\":\"12345678\"}')",
       "Bash(curl -s http://51.77.145.52:8000/auth/login -X POST -H \"Content-Type: application/json\" -d '{\"email\":\"test@test.com\",\"password\":\"12345678\"}')",
-      "Bash(git commit -m 'Add admin panel for database management *)"
+      "Bash(git commit -m 'Add admin panel for database management *)",
+      "Bash(curl -s http://51.77.145.52:3000/admin)",
+      "Bash(curl -s http://localhost:8000/auth/login -X POST -H \"Content-Type: application/json\" -d '{\"email\":\"test@test.com\",\"password\":\"password123\"}')",
+      "Bash(git commit *)"
     ]
   }
 }
