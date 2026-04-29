@@ -58,7 +58,7 @@ function SettingsContent() {
       setMessage("Profile updated successfully!");
       setIsEditing(false);
       setTimeout(() => setMessage(""), 3000);
-    } catch (error) {
+    } catch {
       setMessage("Failed to update profile. Please try again.");
     } finally {
       setSaving(false);

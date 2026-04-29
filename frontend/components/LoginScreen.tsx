@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import { Card } from "./ui/Card";
 import { Button } from "./ui/Button";
 import { Input } from "./ui/Input";
 import { Spinner } from "./ui/Spinner";
 import { useUser } from "./UserProvider";
+import { AuthBackground } from "./AuthBackground";
 
 export function LoginScreen() {
   const router = useRouter();
@@ -41,30 +43,38 @@ export function LoginScreen() {
   const message = localError || error;
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 animated-gradient-bg">
-      <div className="w-full max-w-sm">
+    <div className="relative min-h-screen flex items-center justify-center px-4">
+      <AuthBackground />
+
+      <motion.div
+        className="relative z-10 w-full max-w-sm"
+        initial={{ opacity: 0, y: 24 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+      >
+        {/* Logo + heading */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 mb-4">
-            <div className="h-10 w-10 rounded-xl bg-cyan-600 flex items-center justify-center">
+          <motion.div
+            className="inline-flex items-center gap-2 mb-4"
+            initial={{ opacity: 0, scale: 0.85 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+          >
+            <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-cyan-500 to-emerald-500 flex items-center justify-center shadow-lg shadow-cyan-500/30">
               <span className="text-white text-xl font-black">F</span>
             </div>
-            <span className="text-2xl font-black text-white tracking-tight">
-              FitTrack
-            </span>
-          </div>
+            <span className="text-2xl font-black text-white tracking-tight">FitTrack</span>
+          </motion.div>
           <h1 className="text-2xl font-bold text-white">Welcome back</h1>
           <p className="text-sm text-slate-400 mt-1">
             Sign in to continue tracking your fitness journey
           </p>
         </div>
 
-        <Card className="p-6 backdrop-blur-xl bg-slate-900/80 border border-slate-700">
+        <Card className="p-6 backdrop-blur-xl bg-slate-900/70 border border-slate-700/60 shadow-2xl shadow-black/40">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-slate-300 mb-1.5"
-              >
+              <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-1.5">
                 Email
               </label>
               <Input
@@ -80,10 +90,7 @@ export function LoginScreen() {
             </div>
 
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-slate-300 mb-1.5"
-              >
+              <label htmlFor="password" className="block text-sm font-medium text-slate-300 mb-1.5">
                 Password
               </label>
               <div className="relative">
@@ -146,7 +153,7 @@ export function LoginScreen() {
             </div>
           </form>
         </Card>
-      </div>
+      </motion.div>
     </div>
   );
 }

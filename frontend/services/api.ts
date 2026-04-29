@@ -303,7 +303,6 @@ export function logFood(foodText: string) {
 }
 
 export function logWeight(weight: number) {
-  console.log("📊 Logging weight:", { weight });
   return request<WeightLog>("/weight-log", {
     method: "POST",
     body: JSON.stringify({ weight }),

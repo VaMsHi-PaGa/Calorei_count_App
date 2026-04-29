@@ -8,14 +8,14 @@ Provides:
 - AI-powered personalized tips via Ollama (optional)
 """
 
-from datetime import date, datetime, timedelta
+from datetime import date, timedelta
 import logging
 from typing import Optional
 from sqlalchemy.orm import Session
 import requests
 from requests.exceptions import RequestException, Timeout, ConnectionError
 
-from app.models import User, UserGoal, WeightLog, FoodLog
+from app.models import User, UserGoal, WeightLog
 from app.services.aggregation import (
     get_logging_stats,
     get_average_metrics,
@@ -226,7 +226,6 @@ def _get_nutrition_suggestions(metrics: dict, goal: Optional[UserGoal]) -> list[
     target_protein = goal.daily_protein_target or _estimate_protein_target(metrics)
 
     if target_protein and avg_protein < target_protein * 0.8:  # 80%+ of target
-        deficit = target_protein - avg_protein
         suggestions.append(
             Suggestion(
                 title="Increase Protein Intake",

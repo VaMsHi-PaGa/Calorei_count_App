@@ -4,17 +4,16 @@ Report generation and export routes.
 Endpoints for generating fitness reports, accessing suggestions, and exporting data.
 """
 
-from datetime import date, datetime, timedelta
-from typing import Optional
+from datetime import date, datetime, timedelta, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import JSONResponse, Response
 import logging
 from sqlalchemy.orm import Session
 
 from app.db.database import get_db
 from app.models import User
 from app.middleware.auth import get_current_user
-from app.services.reports import generate_report, Report, MIN_LOGGING_DAYS
+from app.services.reports import generate_report, MIN_LOGGING_DAYS
 from app.services.suggestions import get_suggestions
 
 logger = logging.getLogger(__name__)
@@ -120,7 +119,7 @@ def get_report_suggestions(
 
     return {
         "suggestions": [s.to_dict() for s in suggestions],
-        "generated_at": datetime.utcnow().isoformat(),
+        "generated_at": datetime.now(timezone.utc).isoformat(),
         "count": len(suggestions),
     }
 
@@ -168,11 +167,10 @@ def export_report(
         )
 
     elif format == "html":
-        # HTML export
         html_content = report.to_html()
-        return FileResponse(
+        return Response(
+            content=html_content,
             media_type="text/html",
-            content=html_content.encode("utf-8"),
             headers={
                 "Content-Disposition": f'attachment; filename="{filename}.html"',
             },
@@ -248,13 +246,13 @@ def report_health(db: Session = Depends(get_db), current_user: User = Depends(ge
     start_date = end_date - timedelta(days=7)
 
     try:
-        stats = get_logging_stats(db, current_user.id, start_date, end_date)
+        get_logging_stats(db, current_user.id, start_date, end_date)
         aggregation_status = "ok"
     except Exception as e:
         aggregation_status = f"error: {str(e)}"
 
     try:
-        suggestions = get_suggestions(db, current_user.id, days=7, use_ai=False)
+        get_suggestions(db, current_user.id, days=7, use_ai=False)
         suggestions_status = "ok"
     except Exception as e:
         suggestions_status = f"error: {str(e)}"

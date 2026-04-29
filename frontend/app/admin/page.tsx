@@ -1,88 +1,55 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { useUser } from "@/components/UserProvider";
 
 export default function AdminPage() {
-  const [users, setUsers] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const { user, authReady } = useUser();
+  const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [loading, setLoading] = useState(false);
 
+  // Redirect if not authenticated
   useEffect(() => {
-    loadUsers();
-  }, []);
-
-  const loadUsers = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch("http://51.77.145.52:8000/users", {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${localStorage.getItem("fitness_access_token")}`,
-        },
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setUsers(Array.isArray(data) ? data : []);
-      }
-    } catch (error) {
-      console.error("Error loading users:", error);
-    } finally {
-      setLoading(false);
+    if (authReady && !user) {
+      router.push("/login");
     }
-  };
+  }, [user, authReady, router]);
 
-  const deleteUser = async (userId: number, email: string) => {
+  if (!authReady || !user) {
+    return (
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <p className="text-slate-400">Loading...</p>
+      </div>
+    );
+  }
+
+  const deleteUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email.trim()) {
+      setMessage("❌ Please enter an email");
+      return;
+    }
+
     if (!confirm(`Delete user ${email}? This action cannot be undone.`)) return;
 
-    try {
-      setLoading(true);
-      const response = await fetch(`http://51.77.145.52:8000/users/${userId}`, {
-        method: "DELETE",
-        headers: {
-          "Authorization": `Bearer ${localStorage.getItem("fitness_access_token")}`,
-        },
-      });
-
-      if (response.ok) {
-        setMessage(`✅ Deleted user: ${email}`);
-        loadUsers();
-      } else {
-        setMessage("❌ Failed to delete user");
-      }
-    } catch (error) {
-      setMessage("❌ Error deleting user");
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const clearAllData = async () => {
-    if (
-      !confirm(
-        "⚠️ This will delete ALL users and related data. Are you absolutely sure?"
-      )
-    )
-      return;
+    setLoading(true);
+    setMessage("");
 
     try {
-      setLoading(true);
-      for (const user of users) {
-        await fetch(`http://51.77.145.52:8000/users/${user.id}`, {
-          method: "DELETE",
-          headers: {
-            "Authorization": `Bearer ${localStorage.getItem("fitness_access_token")}`,
-          },
-        });
-      }
-      setMessage("✅ All users deleted");
-      setUsers([]);
+      // First, get the user ID by email (this would need an endpoint)
+      // For now, show instructions to use the CLI method
+      setMessage(
+        "❌ Web deletion requires additional backend endpoints. Use the CLI method instead:\n\npython3 /tmp/delete_helper.py delete " +
+          email
+      );
     } catch (error) {
-      setMessage("❌ Error clearing data");
-      console.error(error);
+      setMessage("❌ Error: " + (error instanceof Error ? error.message : "Unknown error"));
     } finally {
       setLoading(false);
     }
@@ -90,13 +57,13 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 p-8">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-black text-white mb-2">Admin Panel</h1>
-        <p className="text-slate-400 mb-6">⚠️ Temporary debug page - use with caution</p>
+      <div className="max-w-2xl mx-auto">
+        <h1 className="text-3xl font-black text-white mb-2">Admin Panel</h1>
+        <p className="text-slate-400 mb-6">Database Management Tools</p>
 
         {message && (
           <div
-            className={`p-4 rounded-lg mb-6 ${
+            className={`p-4 rounded-lg mb-6 whitespace-pre-wrap font-mono text-sm ${
               message.includes("✅")
                 ? "bg-emerald-950/30 border border-emerald-500/30 text-emerald-300"
                 : "bg-rose-950/30 border border-rose-500/30 text-rose-300"
@@ -107,69 +74,67 @@ export default function AdminPage() {
         )}
 
         <Card className="p-6 mb-6">
-          <h2 className="text-xl font-bold text-white mb-4">Database Users</h2>
-          <p className="text-slate-400 mb-4">Total users: {users.length}</p>
-
-          <div className="overflow-x-auto mb-6">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-slate-700">
-                  <th className="text-left py-2 px-2 text-slate-400">ID</th>
-                  <th className="text-left py-2 px-2 text-slate-400">Email</th>
-                  <th className="text-left py-2 px-2 text-slate-400">Name</th>
-                  <th className="text-left py-2 px-2 text-slate-400">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((user) => (
-                  <tr key={user.id} className="border-b border-slate-800 hover:bg-slate-900/50">
-                    <td className="py-3 px-2 text-white">{user.id}</td>
-                    <td className="py-3 px-2 text-white">{user.email}</td>
-                    <td className="py-3 px-2 text-slate-300">
-                      {user.preferred_name || user.first_name || "—"}
-                    </td>
-                    <td className="py-3 px-2">
-                      <button
-                        onClick={() => deleteUser(user.id, user.email)}
-                        disabled={loading}
-                        className="px-3 py-1 bg-rose-600 hover:bg-rose-700 text-white text-xs rounded disabled:opacity-50"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-
-          {users.length > 0 && (
-            <div className="flex gap-2">
-              <Button
-                variant="secondary"
-                onClick={loadUsers}
+          <h2 className="text-xl font-bold text-white mb-4">Quick Delete User</h2>
+          <form onSubmit={deleteUser} className="space-y-4">
+            <div>
+              <label className="text-sm font-semibold text-slate-300 block mb-2">
+                Email Address
+              </label>
+              <Input
+                type="email"
+                placeholder="test@test.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 disabled={loading}
-              >
-                Refresh
-              </Button>
-              <Button
-                variant="secondary"
-                onClick={clearAllData}
-                disabled={loading}
-                className="!bg-rose-950 !text-rose-300 hover:!bg-rose-900"
-              >
-                ⚠️ Clear All Data
-              </Button>
+              />
             </div>
-          )}
+            <Button variant="secondary" type="submit" disabled={loading} className="!bg-rose-950">
+              Delete User
+            </Button>
+          </form>
+        </Card>
+
+        <Card className="p-6 mb-6">
+          <h2 className="text-xl font-bold text-white mb-4">Command Line Tools</h2>
+          <p className="text-slate-300 mb-4">Use these commands in your terminal:</p>
+          <div className="space-y-3 text-sm">
+            <div className="bg-slate-900 p-3 rounded border border-slate-700">
+              <p className="text-cyan-400 font-mono">python3 /tmp/delete_helper.py list</p>
+              <p className="text-slate-400 text-xs mt-1">Show all users in database</p>
+            </div>
+            <div className="bg-slate-900 p-3 rounded border border-slate-700">
+              <p className="text-cyan-400 font-mono">python3 /tmp/delete_helper.py delete [email]</p>
+              <p className="text-slate-400 text-xs mt-1">Delete a specific user by email</p>
+            </div>
+            <div className="bg-slate-900 p-3 rounded border border-slate-700">
+              <p className="text-cyan-400 font-mono">python3 /tmp/delete_helper.py clear-users</p>
+              <p className="text-slate-400 text-xs mt-1">Delete all users</p>
+            </div>
+            <div className="bg-slate-900 p-3 rounded border border-slate-700">
+              <p className="text-cyan-400 font-mono">python3 /tmp/delete_helper.py clear-food</p>
+              <p className="text-slate-400 text-xs mt-1">Delete all food logs</p>
+            </div>
+            <div className="bg-slate-900 p-3 rounded border border-slate-700">
+              <p className="text-cyan-400 font-mono">python3 /tmp/delete_helper.py clear-weight</p>
+              <p className="text-slate-400 text-xs mt-1">Delete all weight logs</p>
+            </div>
+          </div>
         </Card>
 
         <Card className="p-6">
           <h2 className="text-xl font-bold text-white mb-4">Database Info</h2>
           <div className="space-y-2 text-sm text-slate-300">
-            <p>📍 Database: SQLite at <code className="bg-slate-900 px-2 py-1 rounded">/home/ubuntu/fitness-app/database.db</code></p>
-            <p>🗂️ Tables: users, food_logs, weight_logs, user_goals</p>
-            <p>✅ Status: Connected via SQLAlchemy ORM</p>
+            <p>
+              📍 Location:{" "}
+              <code className="bg-slate-900 px-2 py-1 rounded text-cyan-400">
+                /home/ubuntu/fitness-app/database.db
+              </code>
+            </p>
+            <p>🗂️ Type: SQLite 3</p>
+            <p>✅ Connected via SQLAlchemy ORM</p>
+            <p className="text-slate-400 mt-4">
+              ⚠️ Warning: These tools permanently delete data. Use with caution!
+            </p>
           </div>
         </Card>
       </div>

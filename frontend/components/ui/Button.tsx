@@ -11,11 +11,11 @@ type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
 
 const variantClasses: Record<Variant, string> = {
   primary:
-    "bg-cyan-600 text-white hover:bg-cyan-700 disabled:bg-cyan-400 disabled:text-white/50",
+    "bg-cyan-600 text-white hover:bg-cyan-700 disabled:opacity-50",
   secondary:
-    "bg-slate-800 text-slate-200 hover:bg-slate-700 disabled:bg-slate-800 disabled:text-slate-600 border border-slate-700",
+    "bg-slate-800 text-slate-200 hover:bg-slate-700 disabled:opacity-50 border border-slate-700",
   ghost:
-    "bg-transparent text-slate-300 hover:bg-slate-900/50 hover:text-white disabled:text-slate-600",
+    "bg-transparent text-slate-300 hover:bg-slate-900/50 hover:text-white disabled:opacity-40",
   gradient:
     "bg-gradient-to-r from-cyan-400 to-violet-500 text-white hover:opacity-90 disabled:opacity-50 shadow-lg shadow-cyan-500/20 transition-all",
 };

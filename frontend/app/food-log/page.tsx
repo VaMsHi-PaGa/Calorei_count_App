@@ -28,7 +28,6 @@ export default function FoodLogPage() {
 
 function FoodLogContent() {
   const { user } = useUser();
-  const userId = user?.id ?? null;
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
   const [goal, setGoal] = useState<UserGoal | null>(null);
   const [allLogs, setAllLogs] = useState<FoodLog[]>([]);
@@ -40,6 +39,7 @@ function FoodLogContent() {
 
   useEffect(() => {
     let cancelled = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true);
     Promise.all([
       getDashboard(),
