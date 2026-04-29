@@ -273,3 +273,51 @@ def report_health(db: Session = Depends(get_db), current_user: User = Depends(ge
             "reports": reports_status,
         },
     }
+
+
+@router.get("/weekly-summary")
+def get_weekly_summary(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+) -> dict:
+    """Return this week vs last week averages for calories, protein, weight."""
+    from datetime import date, timedelta
+    from sqlalchemy import func
+    from app.models.food_log import FoodLog as FoodLogModel
+    from app.models.weight_log import WeightLog as WeightLogModel
+
+    today = date.today()
+    this_week_start = today - timedelta(days=today.weekday())
+    last_week_start = this_week_start - timedelta(days=7)
+    last_week_end = this_week_start - timedelta(days=1)
+
+    def food_avg(start: date, end: date):
+        rows = db.query(
+            func.avg(FoodLogModel.calories).label("cal"),
+            func.avg(FoodLogModel.protein).label("protein"),
+        ).filter(
+            FoodLogModel.user_id == current_user.id,
+            func.date(FoodLogModel.created_at) >= start,
+            func.date(FoodLogModel.created_at) <= end,
+        ).first()
+        return {
+            "avg_calories": round(rows.cal or 0, 1),
+            "avg_protein": round(rows.protein or 0, 1),
+        }
+
+    def weight_avg(start: date, end: date):
+        row = db.query(func.avg(WeightLogModel.weight)).filter(
+            WeightLogModel.user_id == current_user.id,
+            WeightLogModel.date >= start,
+            WeightLogModel.date <= end,
+        ).scalar()
+        return round(row or 0, 2)
+
+    this_week = food_avg(this_week_start, today)
+    last_week = food_avg(last_week_start, last_week_end)
+
+    return {
+        "this_week": {**this_week, "avg_weight": weight_avg(this_week_start, today)},
+        "last_week": {**last_week, "avg_weight": weight_avg(last_week_start, last_week_end)},
+        "week_start": str(this_week_start),
+    }

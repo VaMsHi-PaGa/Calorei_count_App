@@ -9,6 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { useRouter } from "next/navigation";
 import {
   signup as apiSignup,
   login as apiLogin,
@@ -18,7 +19,6 @@ import {
   storeTokens,
   clearTokens,
   getStoredTokens,
-  type AuthResponse,
   type User,
 } from "@/services/api";
 
@@ -46,12 +46,19 @@ type UserContextValue = {
 const UserContext = createContext<UserContextValue | null>(null);
 
 export function UserProvider({ children }: { children: ReactNode }) {
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(false);
   const [authReady, setAuthReady] = useState(
     typeof window !== "undefined" ? false : true
   );
   const [error, setError] = useState("");
+
+  const redirectAfterAuth = useCallback((u: User) => {
+    if (!u.onboarding_complete) {
+      router.push("/onboarding");
+    }
+  }, [router]);
 
   // Restore session from stored tokens on mount
   useEffect(() => {
@@ -109,6 +116,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         const response = await apiSignup(email, password, height, age, gender, firstName, lastName, preferredName);
         storeTokens(response.access_token, response.refresh_token);
         setUser(response.user);
+        redirectAfterAuth(response.user);
       } catch (err) {
         const message = err instanceof Error ? err.message : "Failed to sign up.";
         setError(message);
@@ -117,7 +125,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         setLoading(false);
       }
     },
-    []
+    [redirectAfterAuth]
   );
 
   const login = useCallback(async (email: string, password: string) => {
@@ -127,6 +135,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
       const response = await apiLogin(email, password);
       storeTokens(response.access_token, response.refresh_token);
       setUser(response.user);
+      redirectAfterAuth(response.user);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Failed to log in.";
       setError(message);
@@ -134,7 +143,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [redirectAfterAuth]);
 
   const logout = useCallback(() => {
     clearTokens();

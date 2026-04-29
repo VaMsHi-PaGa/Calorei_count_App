@@ -24,6 +24,11 @@ class User(Base):
     created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
 
+    dietary_preference = Column(String, nullable=True)
+    activity_level = Column(String, nullable=True)
+    onboarding_complete = Column(Boolean, default=False, nullable=False)
+
     food_logs = relationship("FoodLog", back_populates="user", cascade="all, delete-orphan")
     weight_logs = relationship("WeightLog", back_populates="user", cascade="all, delete-orphan")
     goals = relationship("UserGoal", back_populates="user", uselist=False, cascade="all, delete-orphan")
+    streak = relationship("UserStreak", back_populates="user", uselist=False, cascade="all, delete-orphan")

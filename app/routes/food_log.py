@@ -9,6 +9,7 @@ from app.models.food_log import FoodLog
 from app.models.user import User
 from app.schemas import FoodLogCreate, FoodLogRead
 from app.services.ai import get_food_nutrition
+from app.services.streaks import update_streak
 
 router = APIRouter(prefix="/food-log", tags=["food-log"])
 
@@ -41,6 +42,7 @@ def create_food_log(
     db.add(food_log)
     db.commit()
     db.refresh(food_log)
+    update_streak(db, current_user.id, "food")
     return food_log
 
 

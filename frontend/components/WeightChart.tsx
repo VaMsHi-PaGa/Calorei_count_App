@@ -38,6 +38,20 @@ function rollingAverage(values: number[], window = 7): (number | null)[] {
   });
 }
 
+function linearTrend(values: number[]): (number | null)[] {
+  const n = values.length;
+  if (n < 2) return values.map(() => null);
+  const xs = Array.from({ length: n }, (_, i) => i);
+  const meanX = xs.reduce((a, b) => a + b, 0) / n;
+  const meanY = values.reduce((a, b) => a + b, 0) / n;
+  const num = xs.reduce((s, x, i) => s + (x - meanX) * (values[i] - meanY), 0);
+  const den = xs.reduce((s, x) => s + (x - meanX) ** 2, 0);
+  if (den === 0) return values.map(() => null);
+  const slope = num / den;
+  const intercept = meanY - slope * meanX;
+  return xs.map((x) => Number((slope * x + intercept).toFixed(2)));
+}
+
 export function WeightChart({ weights }: WeightChartProps) {
   const data = useMemo(() => {
     const sorted = [...weights].sort((a, b) =>
@@ -51,6 +65,7 @@ export function WeightChart({ weights }: WeightChartProps) {
     );
     const actual = sorted.map((w) => Number(w.weight));
     const avg = rollingAverage(actual, 7);
+    const trend = linearTrend(actual);
 
     return {
       labels,
@@ -70,7 +85,7 @@ export function WeightChart({ weights }: WeightChartProps) {
           pointHoverRadius: 6,
         },
         {
-          label: "7-day average",
+          label: "7-day avg",
           data: avg,
           borderColor: "#64748b",
           backgroundColor: "transparent",
@@ -78,6 +93,18 @@ export function WeightChart({ weights }: WeightChartProps) {
           borderDash: [6, 4],
           fill: false,
           tension: 0.4,
+          pointRadius: 0,
+          pointHoverRadius: 0,
+        },
+        {
+          label: "Trend",
+          data: trend,
+          borderColor: "#f59e0b",
+          backgroundColor: "transparent",
+          borderWidth: 1.5,
+          borderDash: [3, 6],
+          fill: false,
+          tension: 0,
           pointRadius: 0,
           pointHoverRadius: 0,
         },
