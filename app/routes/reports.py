@@ -4,10 +4,10 @@ Report generation and export routes.
 Endpoints for generating fitness reports, accessing suggestions, and exporting data.
 """
 
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query, status
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import JSONResponse, Response
 import logging
 from sqlalchemy.orm import Session
 
@@ -120,7 +120,7 @@ def get_report_suggestions(
 
     return {
         "suggestions": [s.to_dict() for s in suggestions],
-        "generated_at": datetime.utcnow().isoformat(),
+        "generated_at": datetime.now(timezone.utc).isoformat(),
         "count": len(suggestions),
     }
 
@@ -168,11 +168,10 @@ def export_report(
         )
 
     elif format == "html":
-        # HTML export
         html_content = report.to_html()
-        return FileResponse(
+        return Response(
+            content=html_content,
             media_type="text/html",
-            content=html_content.encode("utf-8"),
             headers={
                 "Content-Disposition": f'attachment; filename="{filename}.html"',
             },

@@ -88,7 +88,6 @@ function WeightContent() {
   }, [refresh]);
 
   const handleLog = async (weight: number) => {
-    console.log("🏋️ handleLog called with weight:", { weight, type: typeof weight, isFinite: Number.isFinite(weight) });
     setLogging(true);
     try {
       await logWeight(weight);
