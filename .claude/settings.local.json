@@ -196,7 +196,20 @@
       "Bash(curl -s http://localhost:3000/signup)",
       "Bash(curl -s http://localhost:8000/auth/login -X POST -H \"Content-Type: application/json\" -d '{}')",
       "Bash(curl -s http://51.77.145.52:3000)",
-      "Bash(git commit -m 'Fix dashboard endpoint routing *)"
+      "Bash(git commit -m 'Fix dashboard endpoint routing *)",
+      "Bash(curl -s http://51.77.145.52:8000/auth/login -X POST -H \"Content-Type: application/json\" -d '{}')",
+      "Bash(curl -s http://51.77.145.52:8000/dashboard -H \"Authorization: Bearer invalid\")",
+      "Bash(curl -s http://51.77.145.52:8000/food-log -H \"Authorization: Bearer invalid\")",
+      "Bash(curl -s http://51.77.145.52:3000/signup)",
+      "Bash(curl -s http://51.77.145.52:8000/auth/signup -X POST -H \"Content-Type: application/json\" -d '{\"email\":\"test@test.com\",\"password\":\"password123\",\"first_name\":\"John\",\"last_name\":\"Doe\",\"height\":180,\"age\":28,\"gender\":\"male\"}')",
+      "Bash(curl -s http://51.77.145.52:8000/auth/signup -X POST -H \"Content-Type: application/json\" -d '{\"email\":\"newuser@test.com\",\"password\":\"password123\",\"first_name\":\"John\",\"last_name\":\"Doe\",\"height\":180,\"age\":28,\"gender\":\"male\"}')",
+      "Bash(curl -s http://51.77.145.52:8000/auth/signup -X POST -H \"Content-Type: application/json\" -d '{\"email\":\"debug@test.com\",\"password\":\"testpass123\",\"first_name\":\"Test\",\"last_name\":\"User\",\"preferred_name\":\"Test\",\"height\":170,\"age\":30,\"gender\":\"female\"}' -w \"\\\\nStatus: %{http_code}\\\\n\")",
+      "Bash(git commit -m 'Fix: Include name fields in signup user creation *)",
+      "Bash(curl -s http://51.77.145.52:8000/auth/signup -X POST -H \"Content-Type: application/json\" -d '{\"email\":\"vamshi.paga@example.com\",\"password\":\"password123\",\"first_name\":\"Vamshi\",\"last_name\":\"Paga\",\"preferred_name\":\"Vamshi\",\"height\":180,\"age\":28,\"gender\":\"male\"}')",
+      "Bash(git commit -m 'Display preferred name in TopBar and Sidebar *)",
+      "Bash(curl -s http://51.77.145.52:8000/auth/login -X POST -H 'Content-Type: application/json' -d '{\"email\":\"test@test.com\",\"password\":\"12345678\"}')",
+      "Bash(curl -s http://51.77.145.52:8000/auth/login -X POST -H \"Content-Type: application/json\" -d '{\"email\":\"test@test.com\",\"password\":\"12345678\"}')",
+      "Bash(git commit -m 'Add admin panel for database management *)"
     ]
   }
 }
