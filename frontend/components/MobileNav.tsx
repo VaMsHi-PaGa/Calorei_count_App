@@ -16,6 +16,7 @@ import {
   WeightIcon,
 } from "./ui/Icons";
 import { Button } from "./ui/Button";
+import { AuroraBackground } from "./AuroraBackground";
 import type { ComponentType, SVGProps } from "react";
 
 type NavItem = {
@@ -53,7 +54,8 @@ export function MobileNav({ children, onLogout }: MobileNavProps) {
   };
 
   return (
-    <div className="flex flex-col min-h-screen lg:hidden bg-slate-950">
+    <div className="flex flex-col min-h-screen lg:hidden bg-slate-950 relative">
+      <AuroraBackground />
       {/* Mobile Header */}
       <div className="sticky top-0 z-40 bg-slate-950/60 backdrop-blur-xl border-b border-slate-800/50 px-4 py-3 flex items-center justify-between">
         {/* Hamburger Button */}
@@ -166,7 +168,7 @@ export function MobileNav({ children, onLogout }: MobileNavProps) {
       </div>
 
       {/* Main Content */}
-      <main className="flex-1 overflow-hidden bg-slate-950">{children}</main>
+      <main className="flex-1 overflow-hidden relative z-10">{children}</main>
     </div>
   );
 }

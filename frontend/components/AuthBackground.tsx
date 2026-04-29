@@ -54,7 +54,7 @@ export function AuthBackground() {
         className="absolute -top-48 -left-48 w-[700px] h-[700px] rounded-full"
         style={{
           background:
-            "radial-gradient(circle, rgba(76,215,246,0.10) 0%, rgba(76,215,246,0.04) 50%, transparent 70%)",
+            "radial-gradient(circle, rgba(76,215,246,0.22) 0%, rgba(76,215,246,0.08) 50%, transparent 70%)",
         }}
         animate={{ x: [0, 40, 0], y: [0, -30, 0], scale: [1, 1.1, 1] }}
         transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
@@ -63,7 +63,7 @@ export function AuthBackground() {
         className="absolute top-[15%] -right-56 w-[600px] h-[600px] rounded-full"
         style={{
           background:
-            "radial-gradient(circle, rgba(208,188,255,0.08) 0%, rgba(139,92,246,0.03) 50%, transparent 70%)",
+            "radial-gradient(circle, rgba(208,188,255,0.18) 0%, rgba(139,92,246,0.08) 50%, transparent 70%)",
         }}
         animate={{ x: [0, -30, 0], y: [0, 50, 0], scale: [1, 1.12, 1] }}
         transition={{ duration: 28, repeat: Infinity, ease: "easeInOut", delay: 4 }}
@@ -72,7 +72,7 @@ export function AuthBackground() {
         className="absolute -bottom-64 left-[20%] w-[800px] h-[800px] rounded-full"
         style={{
           background:
-            "radial-gradient(circle, rgba(16,185,129,0.07) 0%, rgba(16,185,129,0.02) 50%, transparent 70%)",
+            "radial-gradient(circle, rgba(16,185,129,0.15) 0%, rgba(16,185,129,0.05) 50%, transparent 70%)",
         }}
         animate={{ x: [0, 20, 0], y: [0, -25, 0], scale: [1, 1.08, 1] }}
         transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 10 }}
@@ -80,7 +80,7 @@ export function AuthBackground() {
 
       {/* Subtle grid */}
       <div
-        className="absolute inset-0 opacity-[0.02]"
+        className="absolute inset-0 opacity-[0.04]"
         style={{
           backgroundImage:
             "linear-gradient(rgba(76,215,246,0.8) 1px, transparent 1px), linear-gradient(90deg, rgba(76,215,246,0.8) 1px, transparent 1px)",
@@ -92,7 +92,7 @@ export function AuthBackground() {
       {ICONS.map(({ Icon, left, top, size, color, delay, duration, rotateRange, yRange }, i) => (
         <motion.div
           key={i}
-          className={`absolute ${color} opacity-[0.12]`}
+          className={`absolute ${color} opacity-25`}
           style={{ left, top }}
           animate={{
             y: [0, -yRange, 0],
