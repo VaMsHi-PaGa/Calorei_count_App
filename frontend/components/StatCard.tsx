@@ -1,4 +1,7 @@
+"use client";
+
 import type { ComponentType, ReactNode, SVGProps } from "react";
+import { motion } from "framer-motion";
 import { Card } from "./ui/Card";
 
 type StatCardProps = {
@@ -13,12 +16,17 @@ type StatCardProps = {
 };
 
 const accentMap = {
-  emerald: { text: "text-cyan-400", bar: "bg-cyan-400", bg: "bg-cyan-500/10" },
-  orange: { text: "text-orange-400", bar: "bg-orange-400", bg: "bg-orange-500/10" },
-  blue: { text: "text-blue-400", bar: "bg-blue-400", bg: "bg-blue-500/10" },
-  indigo: { text: "text-indigo-400", bar: "bg-indigo-400", bg: "bg-indigo-500/10" },
-  rose: { text: "text-rose-400", bar: "bg-rose-400", bg: "bg-rose-500/10" },
-  amber: { text: "text-amber-400", bar: "bg-amber-400", bg: "bg-amber-500/10" },
+  emerald: { text: "text-cyan-400", bar: "from-cyan-400 to-cyan-300", bg: "bg-cyan-500/10", glow: "shadow-cyan-500/20" },
+  orange: { text: "text-orange-400", bar: "from-orange-400 to-amber-300", bg: "bg-orange-500/10", glow: "shadow-orange-500/20" },
+  blue: { text: "text-blue-400", bar: "from-blue-400 to-sky-300", bg: "bg-blue-500/10", glow: "shadow-blue-500/20" },
+  indigo: { text: "text-indigo-400", bar: "from-indigo-400 to-violet-300", bg: "bg-indigo-500/10", glow: "shadow-indigo-500/20" },
+  rose: { text: "text-rose-400", bar: "from-rose-400 to-pink-300", bg: "bg-rose-500/10", glow: "shadow-rose-500/20" },
+  amber: { text: "text-amber-400", bar: "from-amber-400 to-yellow-300", bg: "bg-amber-500/10", glow: "shadow-amber-500/20" },
+};
+
+export const statCardVariant = {
+  hidden: { opacity: 0, y: 20, scale: 0.96 },
+  show: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.4 } },
 };
 
 export function StatCard({
@@ -39,37 +47,41 @@ export function StatCard({
     : 0;
 
   return (
-    <Card className="p-5" glow>
-      <div className="flex items-start justify-between gap-3">
-        <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-          {label}
-        </p>
-        {Icon && (
-          <div className={`p-2 rounded-lg ${colors.bg} ${colors.text}`}>
-            <Icon className="h-4 w-4" />
-          </div>
-        )}
-      </div>
-      <div className="mt-2 flex items-baseline gap-1">
-        <span className="text-3xl font-black text-white">{value}</span>
-        {unit && <span className="text-sm font-medium text-slate-400">{unit}</span>}
-      </div>
-      {showProgress ? (
-        <div className="mt-4">
-          <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden">
-            <div
-              className={`h-full ${colors.bar} transition-all duration-500`}
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-          <p className="mt-2 text-xs text-slate-400">
-            {progress}% of {goal}
-            {unit ? ` ${unit}` : ""} goal
+    <motion.div variants={statCardVariant} whileHover={{ y: -2, transition: { duration: 0.2 } }}>
+      <Card className={`p-5 h-full shadow-lg ${colors.glow}`} glow>
+        <div className="flex items-start justify-between gap-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+            {label}
           </p>
+          {Icon && (
+            <div className={`p-2 rounded-lg ${colors.bg} ${colors.text} shrink-0`}>
+              <Icon className="h-4 w-4" />
+            </div>
+          )}
         </div>
-      ) : hint ? (
-        <p className="mt-3 text-xs text-slate-400">{hint}</p>
-      ) : null}
-    </Card>
+        <div className="mt-2 flex items-baseline gap-1">
+          <span className="text-3xl font-black text-white">{value}</span>
+          {unit && <span className="text-sm font-medium text-slate-400">{unit}</span>}
+        </div>
+        {showProgress ? (
+          <div className="mt-4">
+            <div className="h-1.5 w-full bg-slate-800/80 rounded-full overflow-hidden">
+              <motion.div
+                className={`h-full bg-gradient-to-r ${colors.bar} rounded-full`}
+                initial={{ width: 0 }}
+                animate={{ width: `${progress}%` }}
+                transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
+              />
+            </div>
+            <p className="mt-2 text-xs text-slate-400">
+              {progress}% of {goal}
+              {unit ? ` ${unit}` : ""} goal
+            </p>
+          </div>
+        ) : hint ? (
+          <p className="mt-3 text-xs text-slate-400">{hint}</p>
+        ) : null}
+      </Card>
+    </motion.div>
   );
 }

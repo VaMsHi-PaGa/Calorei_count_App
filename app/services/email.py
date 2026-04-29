@@ -2,11 +2,14 @@
 Email service for sending password reset and welcome emails.
 """
 
+import logging
 import os
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from typing import Optional
+
+logger = logging.getLogger(__name__)
 
 # Configuration from environment
 SMTP_HOST = os.getenv("SMTP_HOST", "smtp.gmail.com")
@@ -30,9 +33,8 @@ def send_password_reset_email(email: str, reset_token: str, user_name: Optional[
         True if sent successfully, False otherwise
     """
     if not SMTP_USER or not SMTP_PASSWORD:
-        print("⚠️  Email service not configured. Skipping email send.")
-        print(f"Reset link: {FRONTEND_URL}/reset?token={reset_token}")
-        return True  # In dev, print the link instead of failing
+        logger.info("Email service not configured — password reset requested for %s", email)
+        return True  # In dev, skip sending but return success
 
     reset_link = f"{FRONTEND_URL}/reset?token={reset_token}"
     subject = "Reset Your FitTrack Password"
@@ -91,7 +93,7 @@ def send_welcome_email(email: str, user_name: Optional[str] = None) -> bool:
         True if sent successfully, False otherwise
     """
     if not SMTP_USER or not SMTP_PASSWORD:
-        print(f"⚠️  Email service not configured. Welcome email would be sent to {email}")
+        logger.info("Email service not configured — welcome email skipped for %s", email)
         return True  # In dev, skip email but return success
 
     subject = "Welcome to FitTrack!"
@@ -170,8 +172,8 @@ def _send_email(to_email: str, subject: str, text_body: str, html_body: str) -> 
             server.login(SMTP_USER, SMTP_PASSWORD)
             server.send_message(msg)
 
-        print(f"✅ Email sent to {to_email}")
+        logger.info("Email sent to %s", to_email)
         return True
     except Exception as e:
-        print(f"❌ Failed to send email to {to_email}: {str(e)}")
+        logger.error("Failed to send email to %s: %s", to_email, str(e))
         return False

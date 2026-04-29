@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { motion } from "framer-motion";
 import { AppShell } from "@/components/AppShell";
 import { TopBar } from "@/components/TopBar";
 import { StatCard } from "@/components/StatCard";
@@ -178,7 +179,12 @@ function DashboardContent() {
       )}
 
       {/* Top metric cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <motion.div
+        className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6"
+        variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1 } } }}
+        initial="hidden"
+        animate="show"
+      >
         <StatCard
           label="Calories"
           value={Math.round(caloriesConsumed)}
@@ -223,10 +229,15 @@ function DashboardContent() {
               : "Log weight to compute BMI"
           }
         />
-      </div>
+      </motion.div>
 
       {/* Main grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <motion.div
+        className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.45, delay: 0.45, ease: "easeOut" }}
+      >
         {/* Left column */}
         <div className="lg:col-span-2 space-y-6">
           <Card className="p-6">
@@ -330,7 +341,7 @@ function DashboardContent() {
             onSubmit={handleWeightLog}
           />
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }
