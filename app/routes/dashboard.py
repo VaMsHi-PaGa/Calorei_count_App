@@ -13,7 +13,7 @@ from app.models.user_goals import UserGoal
 from app.schemas import DashboardRead
 from app.services.fitness import calculate_bmi, calculate_calorie_target
 
-router = APIRouter(prefix="/api", tags=["dashboard"])
+router = APIRouter(tags=["dashboard"])
 
 
 @router.get("/dashboard", response_model=DashboardRead)
