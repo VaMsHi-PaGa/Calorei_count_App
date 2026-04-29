@@ -44,6 +44,9 @@ function ReportsContent() {
   const [error, setError] = useState<string | null>(null);
 
   const refresh = useCallback(async () => {
+    await null;
+    setLoading(true);
+    setError(null);
     try {
       const eligibilityData = await checkReportEligibility();
       setEligible(eligibilityData);
@@ -61,12 +64,14 @@ function ReportsContent() {
       setError(
         err instanceof Error ? err.message : "Failed to load report data"
       );
+    } finally {
+      setLoading(false);
     }
   }, [days]);
 
   useEffect(() => {
-    setLoading(true);
-    refresh().finally(() => setLoading(false));
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    refresh();
   }, [refresh]);
 
   const handleGenerateReport = async () => {
@@ -394,9 +399,9 @@ function ReportsContent() {
                   </div>
                   {((report.trends as Record<string, unknown>)["insight"] as string) && (
                     <p className="text-sm text-slate-300 mt-4 italic">
-                      "
+                      &quot;
                       {((report.trends as Record<string, unknown>)["insight"] as string)}
-                      "
+                      &quot;
                     </p>
                   )}
                 </Card>

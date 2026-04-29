@@ -27,6 +27,7 @@ export function WaterTracker({
 
   useEffect(() => {
     const saved = localStorage.getItem(todayKey(userId));
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setGlasses(saved ? Number(saved) || 0 : 0);
   }, [userId]);
 

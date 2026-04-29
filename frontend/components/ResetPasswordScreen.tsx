@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card } from "./ui/Card";
 import { Button } from "./ui/Button";
@@ -12,23 +12,12 @@ export function ResetPasswordScreen() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { resetPassword, loading, error } = useUser();
-  const [token, setToken] = useState("");
+  const t = searchParams.get("token");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [localError, setLocalError] = useState("");
-  const [tokenError, setTokenError] = useState(false);
-
-  // Extract token from URL params
-  useEffect(() => {
-    const t = searchParams.get("token");
-    if (!t) {
-      setTokenError(true);
-      setLocalError("Invalid or missing reset token.");
-    } else {
-      setToken(t);
-    }
-  }, [searchParams]);
+  const tokenError = !t;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,7 +34,7 @@ export function ResetPasswordScreen() {
     }
 
     try {
-      await resetPassword(token, password);
+      await resetPassword(t!, password);
       router.push("/");
     } catch {
       // error already set in provider
@@ -79,7 +68,7 @@ export function ResetPasswordScreen() {
     );
   }
 
-  const message = localError || error;
+  const message = localError || error || (tokenError ? "Invalid or missing reset token." : "");
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-br from-slate-50 via-white to-emerald-50">

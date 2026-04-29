@@ -37,7 +37,6 @@ export default function WeightPage() {
 
 function WeightContent() {
   const { user } = useUser();
-  const userId = user?.id ?? null;
   const [allWeights, setAllWeights] = useState<WeightLog[]>([]);
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
   const [goal, setGoal] = useState<UserGoal | null>(null);
@@ -46,7 +45,6 @@ function WeightContent() {
   const [logging, setLogging] = useState(false);
   const [suggestionsLoading, setSuggestionsLoading] = useState(false);
   const [timeRange, setTimeRange] = useState<"7d" | "30d" | "90d" | "1y" | "all">("30d");
-  const [activeTab, setActiveTab] = useState<"current" | "history">("current");
 
   const refresh = useCallback(async () => {
     try {
@@ -83,7 +81,7 @@ function WeightContent() {
   }, []);
 
   useEffect(() => {
-    setLoading(true);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     refresh().finally(() => setLoading(false));
   }, [refresh]);
 

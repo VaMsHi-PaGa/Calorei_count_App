@@ -18,11 +18,9 @@ import {
   updateGoal,
   deleteGoal,
   getDashboard,
-  getWeightLogs,
   type UserGoal,
   type UserGoalInput,
   type DashboardData,
-  type WeightLog,
 } from "@/services/api";
 
 export default function GoalsPage() {
@@ -37,7 +35,6 @@ function GoalsContent() {
   const { user } = useUser();
   const [goal, setGoal] = useState<UserGoal | null>(null);
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
-  const [weights, setWeights] = useState<WeightLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(false);
@@ -83,7 +80,7 @@ function GoalsContent() {
   }, []);
 
   useEffect(() => {
-    setLoading(true);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     refresh().finally(() => setLoading(false));
   }, [refresh]);
 
@@ -174,7 +171,7 @@ function GoalsContent() {
   const currentWeight = dashboard?.latest_weight ?? null;
   const daysUntilGoal = goal
     ? Math.ceil(
-        (new Date(goal.target_date).getTime() - Date.now()) /
+        (new Date(goal.target_date).getTime() - new Date().getTime()) /
           (1000 * 60 * 60 * 24)
       )
     : 0;

@@ -42,11 +42,6 @@ export default function AdminPage() {
     setMessage("");
 
     try {
-      const protocol = typeof window !== "undefined" ? window.location.protocol : "http:";
-      const host = typeof window !== "undefined" ? window.location.hostname : "localhost";
-      const baseUrl = `${protocol}//${host}:8000`;
-      const token = localStorage.getItem("fitness_access_token");
-
       // First, get the user ID by email (this would need an endpoint)
       // For now, show instructions to use the CLI method
       setMessage(

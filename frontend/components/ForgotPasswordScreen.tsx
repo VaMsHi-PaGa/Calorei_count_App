@@ -43,7 +43,7 @@ export function ForgotPasswordScreen() {
           </div>
           <h1 className="text-2xl font-bold text-slate-900">Reset your password</h1>
           <p className="text-sm text-slate-600 mt-1">
-            We'll send you a link to reset your password
+            We&apos;ll send you a link to reset your password
           </p>
         </div>
 
@@ -53,7 +53,7 @@ export function ForgotPasswordScreen() {
               <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-800 text-sm">
                 <p className="font-medium mb-1">Check your email</p>
                 <p>
-                  We've sent a password reset link to <strong>{email}</strong>. Please check
+                  We&apos;ve sent a password reset link to <strong>{email}</strong>. Please check
                   your inbox and follow the link to reset your password.
                 </p>
               </div>

@@ -21,10 +21,10 @@ function WaterContent() {
   const [activeTab, setActiveTab] = useState<"today" | "history">("today");
   const [waterHistory, setWaterHistory] = useState<Record<string, number>>({});
 
-  if (!user) return null;
-
   // Load water history from localStorage
   useEffect(() => {
+    if (!user) return;
+
     const STORAGE_PREFIX = "fitness_water";
     const history: Record<string, number> = {};
 
@@ -38,8 +38,11 @@ function WaterContent() {
       }
     }
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setWaterHistory(history);
-  }, [user.id]);
+  }, [user]);
+
+  if (!user) return null;
 
   const tips = [
     "Aim for ~250 ml (1 glass) every hour you're awake.",

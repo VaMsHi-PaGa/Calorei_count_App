@@ -18,7 +18,6 @@ import {
   storeTokens,
   clearTokens,
   getStoredTokens,
-  type AuthResponse,
   type User,
 } from "@/services/api";
 

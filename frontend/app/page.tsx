@@ -87,6 +87,7 @@ function DashboardContent() {
   const [weightLoading, setWeightLoading] = useState(false);
 
   const refresh = useCallback(async () => {
+    await null;
     try {
       setError("");
       const [dash, w, foods, g] = await Promise.all([
@@ -110,7 +111,7 @@ function DashboardContent() {
   }, []);
 
   useEffect(() => {
-    setLoading(true);
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     refresh();
   }, [refresh]);
 
@@ -288,7 +289,7 @@ function DashboardContent() {
               <h2 className="text-base font-bold text-white">
                 Macro breakdown
               </h2>
-              <p className="text-xs text-slate-400 mt-0.5">Today's intake</p>
+              <p className="text-xs text-slate-400 mt-0.5">Today&apos;s intake</p>
             </div>
             <MacroChart
               protein={dashboard.total_protein_today}

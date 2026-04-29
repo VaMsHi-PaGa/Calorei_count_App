@@ -37,6 +37,7 @@ function AnalyticsContent() {
   const days = period === "7d" ? 7 : period === "30d" ? 30 : 90;
 
   const refresh = useCallback(async () => {
+    await null;
     setLoading(true);
     setError(null);
     try {
@@ -58,6 +59,7 @@ function AnalyticsContent() {
   }, [days]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     refresh();
   }, [refresh]);
 

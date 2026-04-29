@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { AppShell } from "./AppShell";
 import { TopBar } from "./TopBar";
 import { Card } from "./ui/Card";
@@ -56,24 +57,24 @@ export function PageStub({
               ))}
             </ul>
             <div className="mt-4 flex flex-wrap gap-3">
-              <a
+              <Link
                 href="/"
                 className="inline-flex items-center gap-2 px-4 py-2 bg-cyan-500 text-white rounded-lg hover:bg-cyan-600 text-sm font-medium transition-colors"
               >
                 Open Dashboard →
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/food-log"
                 className="inline-flex items-center gap-2 px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 text-sm font-medium transition-colors"
               >
                 Log a Meal
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/reports"
                 className="inline-flex items-center gap-2 px-4 py-2 bg-slate-700 text-white rounded-lg hover:bg-slate-600 text-sm font-medium transition-colors"
               >
                 View Reports
-              </a>
+              </Link>
             </div>
           </div>
         </Card>
