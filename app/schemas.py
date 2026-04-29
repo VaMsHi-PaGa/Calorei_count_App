@@ -9,6 +9,9 @@ from pydantic import BaseModel, ConfigDict, Field
 class UserCreate(BaseModel):
     email: str = Field(pattern=r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
     password: str = Field(min_length=8, description="Minimum 8 characters")
+    first_name: str | None = None
+    last_name: str | None = None
+    preferred_name: str | None = None
     height: float = Field(gt=0, le=300, description="Height in centimeters")
     age: int = Field(gt=0, le=150, description="Age in years")
     gender: str = Field(min_length=1)
@@ -19,6 +22,9 @@ class UserRead(BaseModel):
 
     id: int
     email: str
+    first_name: str | None
+    last_name: str | None
+    preferred_name: str | None
     height: float
     age: int
     gender: str
@@ -73,6 +79,9 @@ class DashboardRead(BaseModel):
 class SignupPayload(BaseModel):
     email: str = Field(pattern=r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
     password: str = Field(min_length=8, description="Minimum 8 characters")
+    first_name: str | None = None
+    last_name: str | None = None
+    preferred_name: str | None = None
     height: float = Field(gt=0, le=300, description="Height in centimeters")
     age: int = Field(gt=0, le=150, description="Age in years")
     gender: str = Field(min_length=1)

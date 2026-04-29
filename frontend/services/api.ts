@@ -26,6 +26,9 @@ const AI_TIMEOUT_MS = 90000;
 export type User = {
   id: number;
   email: string;
+  first_name: string | null;
+  last_name: string | null;
+  preferred_name: string | null;
   height: number;
   age: number;
   gender: string;
@@ -251,6 +254,9 @@ export function getUser(userId: number) {
 
 export function updateUserProfile(data: {
   email?: string;
+  first_name?: string;
+  last_name?: string;
+  preferred_name?: string;
   age?: number;
   height?: number;
   gender?: string;
@@ -300,11 +306,14 @@ export function signup(
   password: string,
   height: number,
   age: number,
-  gender: string
+  gender: string,
+  firstName?: string,
+  lastName?: string,
+  preferredName?: string
 ) {
   return request<AuthResponse>("/auth/signup", {
     method: "POST",
-    body: JSON.stringify({ email, password, height, age, gender }),
+    body: JSON.stringify({ email, password, height, age, gender, first_name: firstName, last_name: lastName, preferred_name: preferredName }),
   });
 }
 

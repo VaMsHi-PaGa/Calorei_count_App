@@ -22,6 +22,9 @@ function SettingsContent() {
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({
     email: user?.email || "",
+    firstName: user?.first_name || "",
+    lastName: user?.last_name || "",
+    preferredName: user?.preferred_name || "",
     age: user?.age || 0,
     height: user?.height || 0,
     gender: user?.gender || "male",
@@ -45,6 +48,9 @@ function SettingsContent() {
     try {
       await updateUserProfile({
         email: formData.email,
+        first_name: formData.firstName || undefined,
+        last_name: formData.lastName || undefined,
+        preferred_name: formData.preferredName || undefined,
         age: formData.age,
         height: formData.height,
         gender: formData.gender,
@@ -125,6 +131,45 @@ function SettingsContent() {
 
             <div>
               <label className="text-xs font-semibold uppercase tracking-wide text-slate-400 block mb-2">
+                First Name
+              </label>
+              <Input
+                type="text"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
+                className="w-full"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-semibold uppercase tracking-wide text-slate-400 block mb-2">
+                Last Name
+              </label>
+              <Input
+                type="text"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+                className="w-full"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-semibold uppercase tracking-wide text-slate-400 block mb-2">
+                Preferred Name
+              </label>
+              <Input
+                type="text"
+                name="preferredName"
+                value={formData.preferredName}
+                onChange={handleChange}
+                className="w-full"
+              />
+            </div>
+
+            <div>
+              <label className="text-xs font-semibold uppercase tracking-wide text-slate-400 block mb-2">
                 Age
               </label>
               <Input
@@ -177,6 +222,33 @@ function SettingsContent() {
               </p>
               <p className="mt-1 text-sm font-medium text-white">
                 {user.email}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                First Name
+              </p>
+              <p className="mt-1 text-sm font-medium text-white">
+                {user.first_name || "—"}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                Last Name
+              </p>
+              <p className="mt-1 text-sm font-medium text-white">
+                {user.last_name || "—"}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
+                Preferred Name
+              </p>
+              <p className="mt-1 text-sm font-medium text-white">
+                {user.preferred_name || "—"}
               </p>
             </div>
 

@@ -44,6 +44,9 @@ def get_user(
 
 class UserUpdate(BaseModel):
     email: str | None = None
+    first_name: str | None = None
+    last_name: str | None = None
+    preferred_name: str | None = None
     age: int | None = Field(None, gt=0, le=150)
     height: float | None = Field(None, gt=0, le=300)
     gender: str | None = None
@@ -58,6 +61,12 @@ def update_user_profile(
     # Update only provided fields
     if payload.email is not None:
         current_user.email = payload.email
+    if payload.first_name is not None:
+        current_user.first_name = payload.first_name
+    if payload.last_name is not None:
+        current_user.last_name = payload.last_name
+    if payload.preferred_name is not None:
+        current_user.preferred_name = payload.preferred_name
     if payload.age is not None:
         current_user.age = payload.age
     if payload.height is not None:

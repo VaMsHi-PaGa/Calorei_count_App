@@ -1,0 +1,220 @@
+@import "tailwindcss";
+
+:root {
+  /* Dark theme - NutriLens design system */
+  --background: #0e1416;
+  --foreground: #dee3e6;
+
+  /* Primary colors */
+  --color-primary: #4cd7f6;
+  --color-secondary: #d0bcff;
+
+  /* Surface colors */
+  --color-surface-dim: #0e1416;
+  --color-surface: #1b2122;
+  --color-surface-bright: #343a3c;
+  --color-surface-container: #1b2122;
+  --color-surface-container-low: #171d1e;
+  --color-surface-container-high: #252b2d;
+  --color-surface-container-highest: #303638;
+
+  /* Text/content colors */
+  --color-on-surface: #dee3e6;
+  --color-on-surface-variant: #bcc9cd;
+
+  /* Outline colors */
+  --color-outline: #869397;
+  --color-outline-variant: #3d494c;
+
+  /* Utility colors */
+  --color-error: #ffb4ab;
+  --color-error-container: #93000a;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-primary: var(--color-primary);
+  --color-secondary: var(--color-secondary);
+  --color-surface: var(--color-surface);
+  --color-surface-dim: var(--color-surface-dim);
+  --color-surface-bright: var(--color-surface-bright);
+  --color-surface-container: var(--color-surface-container);
+  --color-surface-container-low: var(--color-surface-container-low);
+  --color-surface-container-high: var(--color-surface-container-high);
+  --color-surface-container-highest: var(--color-surface-container-highest);
+  --color-on-surface: var(--color-on-surface);
+  --color-on-surface-variant: var(--color-on-surface-variant);
+  --color-outline: var(--color-outline);
+  --color-outline-variant: var(--color-outline-variant);
+  --color-error: var(--color-error);
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+  margin: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Glassmorphism and glow effects */
+.glass-panel {
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid #3d494c;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.glow-effect {
+  box-shadow: 0 0 20px rgba(76, 215, 246, 0.15);
+  transition: box-shadow 0.3s ease;
+}
+
+.glow-effect:hover {
+  box-shadow: 0 0 20px rgba(76, 215, 246, 0.25);
+}
+
+.glow-active {
+  box-shadow: 0 0 20px rgba(76, 215, 246, 0.2);
+}
+
+.ai-glow {
+  box-shadow: 0 0 20px rgba(208, 188, 255, 0.15);
+}
+
+/* Gradient button styles */
+.gradient-cyan-violet {
+  background: linear-gradient(135deg, #4cd7f6 0%, #d0bcff 100%);
+}
+
+.gradient-cyan-violet:hover {
+  opacity: 0.9;
+}
+
+/* Animated gradient background for login page */
+.animated-gradient-bg {
+  background: linear-gradient(
+    -45deg,
+    #0f1417 0%,
+    #1e293b 25%,
+    #0c4a6e 50%,
+    #083344 75%,
+    #0f1417 100%
+  );
+  background-size: 400% 400%;
+  animation: gradient-shift 15s ease infinite;
+}
+
+@keyframes gradient-shift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Landing page animations */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-fadeInDown {
+  animation: fadeInDown 0.6s ease-out forwards;
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.animate-slideInRight {
+  animation: slideInRight 0.6s ease-out forwards;
+}
+
+.delay-100 { animation-delay: 100ms; }
+.delay-200 { animation-delay: 200ms; }
+.delay-300 { animation-delay: 300ms; }
+.delay-400 { animation-delay: 400ms; }
+.delay-500 { animation-delay: 500ms; }
+.delay-700 { animation-delay: 700ms; }
+.delay-1000 { animation-delay: 1000ms; }
+
+/* Material Symbols icon defaults */
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  display: inline-block;
+  line-height: 1;
+  text-transform: none;
+  letter-spacing: normal;
+  word-wrap: normal;
+  white-space: nowrap;
+  direction: ltr;
+}

@@ -187,7 +187,16 @@
       "Bash(awk '{print $2}')",
       "Bash(kill -9 44079)",
       "Bash(awk '{print \"PID:\", $2, \"Command:\", $11, $12}')",
-      "Bash(curl -s http://localhost:8000/api/dashboard -H \"Authorization: Bearer test\")"
+      "Bash(curl -s http://localhost:8000/api/dashboard -H \"Authorization: Bearer test\")",
+      "Bash(git commit -m 'Add user profile update endpoint *)",
+      "Bash(git commit -m 'Implement profile editing functionality *)",
+      "Bash(git submodule *)",
+      "Bash(git rm *)",
+      "Bash(pkill -9 npm)",
+      "Bash(curl -s http://localhost:3000/signup)",
+      "Bash(curl -s http://localhost:8000/auth/login -X POST -H \"Content-Type: application/json\" -d '{}')",
+      "Bash(curl -s http://51.77.145.52:3000)",
+      "Bash(git commit -m 'Fix dashboard endpoint routing *)"
     ]
   }
 }
