@@ -53,14 +53,12 @@ function GoalsContent() {
 
   const refresh = useCallback(async () => {
     try {
-      const [g, d, w] = await Promise.all([
+      const [g, d] = await Promise.all([
         getGoal().catch(() => null),
         getDashboard(),
-        getWeightLogs(30),
       ]);
       setGoal(g);
       setDashboard(d);
-      setWeights(w);
 
       if (g) {
         setFormData({
