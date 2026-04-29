@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
+from pydantic import BaseModel, Field
 
 from app.db.database import get_db
 from app.middleware.auth import get_current_user
@@ -39,3 +40,36 @@ def get_user(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
     return user
+
+
+class UserUpdate(BaseModel):
+    email: str | None = None
+    age: int | None = Field(None, gt=0, le=150)
+    height: float | None = Field(None, gt=0, le=300)
+    gender: str | None = None
+
+
+@router.patch("/profile", response_model=UserRead)
+def update_user_profile(
+    payload: UserUpdate,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    # Update only provided fields
+    if payload.email is not None:
+        current_user.email = payload.email
+    if payload.age is not None:
+        current_user.age = payload.age
+    if payload.height is not None:
+        current_user.height = payload.height
+    if payload.gender is not None:
+        current_user.gender = payload.gender
+
+    try:
+        db.commit()
+    except IntegrityError as exc:
+        db.rollback()
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email already exists") from exc
+
+    db.refresh(current_user)
+    return current_user
