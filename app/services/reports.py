@@ -10,8 +10,8 @@ Generates detailed fitness reports including:
 - Export formats (JSON, HTML, PDF, email)
 """
 
-from datetime import date, datetime, timedelta
-import json
+from datetime import date, datetime, timedelta, timezone
+import html as html_module
 import logging
 from typing import Optional
 from sqlalchemy.orm import Session
@@ -47,7 +47,7 @@ class Report:
         self.user_id = user_id
         self.period_start = period_start
         self.period_end = period_end
-        self.generated_at = datetime.utcnow()
+        self.generated_at = datetime.now(timezone.utc)
 
         # Report sections
         self.summary = {}
@@ -142,7 +142,7 @@ class Report:
                 </div>
                 """
             else:
-                html += f'<p><strong>{key}:</strong> {value}</p>'
+                html += f'<p><strong>{key}:</strong> {html_module.escape(str(value))}</p>'
         html += '</div>'
         return html
 
@@ -166,18 +166,19 @@ class Report:
         if "frequent_foods" in self.food_analysis:
             html += '<table><tr><th>Food</th><th>Count</th><th>Category</th></tr>'
             for food in self.food_analysis.get("frequent_foods", [])[:5]:
-                html += f'<tr><td>{food.get("food_text")}</td><td>{food.get("count")}</td><td>{food.get("category")}</td></tr>'
+                html += f'<tr><td>{html_module.escape(str(food.get("food_text", "")))}</td><td>{food.get("count")}</td><td>{html_module.escape(str(food.get("category", "")))}</td></tr>'
             html += '</table>'
 
         html += '<h3>Problematic Foods</h3>'
         problematic = self.food_analysis.get("problematic_foods", [])
         if problematic:
             for food in problematic[:5]:
+                concerns = ', '.join(html_module.escape(c) for c in food.get("concerns", []))
                 html += f"""
                 <div class="warning">
-                    <strong>{food.get("food_text")}</strong> (Quality: {food.get("quality_score")}/100)
-                    <br>Logged {food.get("frequency")} times | Impact: {food.get("impact_rating").upper()}
-                    <br>Concerns: {', '.join(food.get("concerns", []))}
+                    <strong>{html_module.escape(str(food.get("food_text", "")))}</strong> (Quality: {food.get("quality_score")}/100)
+                    <br>Logged {food.get("frequency")} times | Impact: {html_module.escape(str(food.get("impact_rating", ""))).upper()}
+                    <br>Concerns: {concerns}
                 </div>
                 """
         else:

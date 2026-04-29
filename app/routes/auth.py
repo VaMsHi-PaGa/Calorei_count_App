@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta
+import hashlib
+from datetime import datetime, timedelta, timezone
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import IntegrityError
@@ -15,6 +16,7 @@ from app.schemas import (
     UserRead,
 )
 from app.services.auth import (
+    ACCESS_TOKEN_EXPIRE_MINUTES,
     create_access_token,
     create_refresh_token,
     generate_reset_token,
@@ -23,6 +25,10 @@ from app.services.auth import (
     verify_token,
 )
 from app.services.email import send_password_reset_email, send_welcome_email
+
+
+def _hash_reset_token(token: str) -> str:
+    return hashlib.sha256(token.encode()).hexdigest()
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -63,19 +69,16 @@ def signup(payload: SignupPayload, db: Session = Depends(get_db)):
 
     db.refresh(user)
 
-    # Send welcome email
     send_welcome_email(user.email, user_name=None)
 
-    # Generate tokens
     access_token = create_access_token(user.id)
     refresh_token = create_refresh_token(user.id)
-    expires_in = 7 * 24 * 60 * 60  # 7 days in seconds
 
     return TokenResponse(
         access_token=access_token,
         refresh_token=refresh_token,
         user=UserRead.model_validate(user),
-        expires_in=expires_in,
+        expires_in=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
 
 
@@ -89,16 +92,14 @@ def login(payload: LoginPayload, db: Session = Depends(get_db)):
             detail="Invalid email or password",
         )
 
-    # Generate tokens
     access_token = create_access_token(user.id)
     refresh_token = create_refresh_token(user.id)
-    expires_in = 7 * 24 * 60 * 60  # 7 days in seconds
 
     return TokenResponse(
         access_token=access_token,
         refresh_token=refresh_token,
         user=UserRead.model_validate(user),
-        expires_in=expires_in,
+        expires_in=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
 
 
@@ -112,7 +113,6 @@ def refresh(payload: dict, db: Session = Depends(get_db)):
             detail="refresh_token required",
         )
 
-    # Verify refresh token
     user_id = verify_token(refresh_token, token_type="refresh")
     if not user_id:
         raise HTTPException(
@@ -120,7 +120,6 @@ def refresh(payload: dict, db: Session = Depends(get_db)):
             detail="Invalid or expired refresh token",
         )
 
-    # Fetch user
     user = db.get(User, user_id)
     if not user:
         raise HTTPException(
@@ -128,16 +127,14 @@ def refresh(payload: dict, db: Session = Depends(get_db)):
             detail="User not found",
         )
 
-    # Generate new tokens
     access_token = create_access_token(user.id)
     new_refresh_token = create_refresh_token(user.id)
-    expires_in = 7 * 24 * 60 * 60  # 7 days in seconds
 
     return TokenResponse(
         access_token=access_token,
         refresh_token=new_refresh_token,
         user=UserRead.model_validate(user),
-        expires_in=expires_in,
+        expires_in=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
 
 
@@ -146,18 +143,15 @@ def forgot_password(payload: PasswordResetRequest, db: Session = Depends(get_db)
     """Request password reset email."""
     user = db.query(User).filter(User.email == payload.email).first()
 
-    # Don't reveal if email exists (security)
     if not user:
         return {"message": "If that email is registered, you'll receive a password reset link"}
 
-    # Generate reset token with 1-hour expiry
     reset_token = generate_reset_token()
-    user.password_reset_token = reset_token
-    user.password_reset_expires = datetime.utcnow() + timedelta(hours=1)
+    user.password_reset_token = _hash_reset_token(reset_token)
+    user.password_reset_expires = datetime.now(timezone.utc) + timedelta(hours=1)
 
     db.commit()
 
-    # Send reset email
     send_password_reset_email(user.email, reset_token, user_name=None)
 
     return {"message": "If that email is registered, you'll receive a password reset link"}
@@ -166,8 +160,8 @@ def forgot_password(payload: PasswordResetRequest, db: Session = Depends(get_db)
 @router.post("/reset-password", response_model=TokenResponse)
 def reset_password(payload: PasswordResetConfirm, db: Session = Depends(get_db)):
     """Reset password using reset token."""
-    # Find user with reset token
-    user = db.query(User).filter(User.password_reset_token == payload.token).first()
+    token_hash = _hash_reset_token(payload.token)
+    user = db.query(User).filter(User.password_reset_token == token_hash).first()
 
     if not user:
         raise HTTPException(
@@ -175,14 +169,12 @@ def reset_password(payload: PasswordResetConfirm, db: Session = Depends(get_db))
             detail="Invalid reset token",
         )
 
-    # Check if token is expired
-    if not user.password_reset_expires or datetime.utcnow() > user.password_reset_expires:
+    if not user.password_reset_expires or datetime.now(timezone.utc) > user.password_reset_expires:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Reset token expired",
         )
 
-    # Update password
     user.password_hash = hash_password(payload.new_password)
     user.password_reset_token = None
     user.password_reset_expires = None
@@ -190,14 +182,12 @@ def reset_password(payload: PasswordResetConfirm, db: Session = Depends(get_db))
     db.commit()
     db.refresh(user)
 
-    # Generate new tokens
     access_token = create_access_token(user.id)
     refresh_token = create_refresh_token(user.id)
-    expires_in = 7 * 24 * 60 * 60  # 7 days in seconds
 
     return TokenResponse(
         access_token=access_token,
         refresh_token=refresh_token,
         user=UserRead.model_validate(user),
-        expires_in=expires_in,
+        expires_in=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )

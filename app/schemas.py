@@ -124,8 +124,8 @@ class UserGoalRead(BaseModel):
 
 
 class LoginPayload(BaseModel):
-    email: str
-    password: str
+    email: str = Field(pattern=r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
+    password: str = Field(min_length=1)
 
 
 class TokenResponse(BaseModel):

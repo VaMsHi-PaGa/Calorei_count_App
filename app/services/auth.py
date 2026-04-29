@@ -3,17 +3,20 @@ Authentication service for JWT token management and password hashing.
 """
 
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 import secrets
 
 import bcrypt
 from jose import JWTError, jwt
 
-# Configuration from environment
-SECRET_KEY = os.getenv("JWT_SECRET_KEY", "dev-secret-key-change-in-production")
+_KNOWN_DEFAULTS = {"dev-secret-key-change-in-production", "your-secret-key-change-this-in-production", ""}
+SECRET_KEY = os.getenv("JWT_SECRET_KEY", "")
+if SECRET_KEY in _KNOWN_DEFAULTS:
+    raise RuntimeError("JWT_SECRET_KEY must be set to a secure value — refusing to start with a default or empty key")
+
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "10080"))  # 7 days
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
 REFRESH_TOKEN_EXPIRE_MINUTES = int(os.getenv("REFRESH_TOKEN_EXPIRE_MINUTES", "43200"))  # 30 days
 
 
@@ -38,7 +41,7 @@ def create_access_token(user_id: int, expires_delta: Optional[timedelta] = None)
     if expires_delta is None:
         expires_delta = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
 
-    expire = datetime.utcnow() + expires_delta
+    expire = datetime.now(timezone.utc) + expires_delta
     to_encode = {"sub": str(user_id), "type": "access", "exp": expire}
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
@@ -49,7 +52,7 @@ def create_refresh_token(user_id: int, expires_delta: Optional[timedelta] = None
     if expires_delta is None:
         expires_delta = timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES)
 
-    expire = datetime.utcnow() + expires_delta
+    expire = datetime.now(timezone.utc) + expires_delta
     to_encode = {"sub": str(user_id), "type": "refresh", "exp": expire}
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
@@ -90,7 +93,7 @@ def get_token_expiry(token: str) -> Optional[datetime]:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         exp = payload.get("exp")
         if exp:
-            return datetime.utcfromtimestamp(exp)
+            return datetime.fromtimestamp(exp, tz=timezone.utc)
         return None
     except (JWTError, ValueError):
         return None

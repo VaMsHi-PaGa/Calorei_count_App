@@ -36,15 +36,15 @@ def calculate_calorie_target(user: User, weight_kg: float | None, goal: UserGoal
     if bmr is None:
         return None
 
-    # If goal provided, check if it's weight gain or loss
+    tdee = calculate_tdee(bmr)
+
     if goal and weight_kg:
         is_weight_gain = weight_kg < goal.weight_target
         adjustment = 500 if is_weight_gain else -500
     else:
-        # Default to deficit (weight loss)
         adjustment = -500
 
-    return round(bmr + adjustment, 2)
+    return round(tdee + adjustment, 2)
 
 
 def calculate_nutritional_targets(
@@ -71,13 +71,13 @@ def calculate_nutritional_targets(
     # Determine if weight gain or loss goal
     is_weight_gain = goal_weight and current_weight < goal_weight
 
-    # Calculate calorie target if not provided
     if not calorie_target:
         bmr = calculate_bmr(user, current_weight)
         if not bmr:
             return {}
+        tdee = calculate_tdee(bmr)
         adjustment = 500 if is_weight_gain else -500
-        calorie_target = round(bmr + adjustment, 2)
+        calorie_target = round(tdee + adjustment, 2)
 
     # Protein: 1.8-2.2g per kg for muscle building/preservation, 1.2-1.6 for general health
     protein_multiplier = 2.0 if is_weight_gain else 1.6

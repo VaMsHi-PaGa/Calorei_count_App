@@ -4,7 +4,7 @@ Goal management routes.
 Endpoints for creating, reading, updating, and deleting user weight/fitness goals.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
@@ -146,7 +146,7 @@ def update_goal(
     for field, value in update_data.items():
         setattr(goal, field, value)
 
-    goal.updated_at = datetime.utcnow()
+    goal.updated_at = datetime.now(timezone.utc)
 
     db.add(goal)
     db.commit()
