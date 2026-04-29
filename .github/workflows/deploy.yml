@@ -48,10 +48,10 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          port: ${{ secrets.VPS_PORT || 22 }}
+          port: ${{ secrets.VPS_PORT }}
           script: |
             set -e
-            cd /opt/fittrack
+            cd /home/ubuntu/fittrack
 
             # Pull latest code
             git pull origin main
