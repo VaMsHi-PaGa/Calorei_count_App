@@ -14,9 +14,14 @@ function getGreeting(): string {
   return "Good evening";
 }
 
-function getDisplayName(email: string | undefined): string {
-  if (!email) return "there";
-  const local = email.split("@")[0];
+function getDisplayName(user: User | null | undefined): string {
+  // Prioritize: preferred name > first name > email extraction
+  if (user?.preferred_name) return user.preferred_name;
+  if (user?.first_name) return user.first_name;
+
+  // Fallback to email extraction
+  if (!user?.email) return "there";
+  const local = user.email.split("@")[0];
   if (!local) return "there";
   // Strip digits, capitalize
   const clean = local.replace(/[0-9_.-]+/g, "").trim();
@@ -26,7 +31,7 @@ function getDisplayName(email: string | undefined): string {
 
 export function TopBar({ user, subtitle }: TopBarProps) {
   const greeting = getGreeting();
-  const name = getDisplayName(user?.email);
+  const name = getDisplayName(user);
   const today = new Date().toLocaleDateString(undefined, {
     weekday: "long",
     month: "long",

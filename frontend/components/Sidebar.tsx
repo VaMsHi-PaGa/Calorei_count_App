@@ -42,8 +42,8 @@ type SidebarProps = {
 
 export function Sidebar({ user, onLogout }: SidebarProps) {
   const pathname = usePathname();
-  const initial = user?.email?.[0]?.toUpperCase() ?? "U";
-  const displayName = user?.email?.split("@")[0] ?? "User";
+  const initial = (user?.preferred_name?.[0] || user?.first_name?.[0] || user?.email?.[0])?.toUpperCase() ?? "U";
+  const displayName = user?.preferred_name || user?.first_name || user?.email?.split("@")[0] || "User";
 
   return (
     <aside className="hidden lg:flex w-64 flex-col bg-slate-950 border-r border-slate-800/50 min-h-screen sticky top-0 shadow-2xl shadow-cyan-900/5 z-50">
