@@ -19,6 +19,7 @@ if [ ! -d "venv" ]; then
 else
     source venv/bin/activate
     echo "✅ Virtual environment activated"
+fi
 
 echo ""
 echo "📋 Available deployment options:"
@@ -78,8 +79,7 @@ cd ..
         echo "Frontend starting on http://localhost:3000"
         echo ""
         
-        # Start backend
-        (cd /home/ubuntu/fitness-app && source venv/bin/activate && gunicorn app.main:app -w 4 -b 0.0.0.0:8000 --timeout 120) &
+        (cd /home/ubuntu/fitness-app && source venv/bin/activate && gunicorn app.main:app -w 4 -b 0.0.0.0:8000 --timeout 120 -k uvicorn.workers.UvicornWorker) &
         BACKEND_PID=$!
         
         sleep 2
