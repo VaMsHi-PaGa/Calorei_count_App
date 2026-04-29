@@ -53,8 +53,15 @@ jobs:
             set -e
             cd /home/ubuntu/fittrack
 
-            # Pull latest code
-            git pull origin main
+            # Preserve .env (managed on VPS, not committed)
+            cp .env /tmp/.env.deploy.bak 2>/dev/null || true
+
+            # Pull latest code, discarding any tracked-file conflicts
+            git fetch origin main
+            git reset --hard origin/main
+
+            # Restore .env after reset
+            cp /tmp/.env.deploy.bak .env 2>/dev/null || true
 
             # Rebuild and restart all containers
             docker compose up --build -d --remove-orphans
