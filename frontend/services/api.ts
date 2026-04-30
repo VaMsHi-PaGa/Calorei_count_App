@@ -244,6 +244,13 @@ async function request<T>(
         statusText: response.statusText,
         body,
       });
+
+      // On 401/403 auth failures, clear tokens and redirect to login
+      if ((response.status === 401 || response.status === 403) && typeof window !== "undefined") {
+        clearTokens();
+        window.location.href = "/login";
+      }
+
       const message =
         body &&
         typeof body === "object" &&
