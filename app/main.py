@@ -9,8 +9,6 @@ load_dotenv()
 
 from sqlalchemy import text
 from app.db.database import Base, engine
-from app.models import FoodLog, User, WeightLog, UserGoal  # noqa: F401
-from app.models.user_streak import UserStreak  # noqa: F401
 from app.routes import auth, dashboard, food_log, users, weight_log, goals, reports, streaks
 
 
