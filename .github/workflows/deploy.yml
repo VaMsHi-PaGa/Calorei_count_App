@@ -51,22 +51,57 @@ jobs:
           port: ${{ secrets.VPS_PORT }}
           script: |
             set -e
-            cd /home/ubuntu/fittrack
+            APP_DIR=/home/ubuntu/fittrack
+            cd "$APP_DIR"
 
-            # Preserve .env (managed on VPS, not committed)
+            # Preserve .env (managed on VPS, never committed)
             cp .env /tmp/.env.deploy.bak 2>/dev/null || true
 
-            # Pull latest code, discarding any tracked-file conflicts
+            # Pull latest code
             git fetch origin main
             git reset --hard origin/main
 
             # Restore .env after reset
             cp /tmp/.env.deploy.bak .env 2>/dev/null || true
 
-            # Rebuild and restart all containers
-            docker compose up --build -d --remove-orphans
+            # ── Python backend ────────────────────────────────────────────
+            python3 -m venv venv 2>/dev/null || true
+            source venv/bin/activate
+            pip install -r requirements.txt -q
+            deactivate
 
-            # Remove dangling images to free disk space
-            docker image prune -f
+            # ── Next.js frontend ──────────────────────────────────────────
+            # Bake the public server URL into the frontend build
+            FRONTEND_URL=$(grep '^FRONTEND_URL=' .env | cut -d= -f2- | tr -d '[:space:]')
+            cd frontend
+            npm ci --prefer-offline
+            NEXT_PUBLIC_API_BASE_URL="$FRONTEND_URL" npm run build
+            cd ..
+
+            # ── Restart processes via PM2 ─────────────────────────────────
+            # Backend (uvicorn)
+            if pm2 describe fittrack-backend > /dev/null 2>&1; then
+              pm2 restart fittrack-backend --update-env
+            else
+              pm2 start "$APP_DIR/venv/bin/uvicorn" \
+                --name fittrack-backend \
+                --cwd "$APP_DIR" \
+                -- app.main:app --host 127.0.0.1 --port 8000
+            fi
+
+            # Frontend (Next.js)
+            if pm2 describe fittrack-frontend > /dev/null 2>&1; then
+              pm2 restart fittrack-frontend
+            else
+              pm2 start npm \
+                --name fittrack-frontend \
+                --cwd "$APP_DIR/frontend" \
+                -- start
+            fi
+
+            pm2 save
+
+            # ── Reload nginx ──────────────────────────────────────────────
+            sudo nginx -t && sudo systemctl reload nginx
 
             echo "Deploy complete — $(date)"
