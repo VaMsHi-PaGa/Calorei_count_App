@@ -21,6 +21,14 @@ const API_BASE_URL = (() => {
 const DEFAULT_TIMEOUT_MS = 15000;
 const AI_TIMEOUT_MS = 90000;
 
+// Thrown on 401/403 so components can redirect to login
+export class AuthError extends Error {
+  constructor(message = "Not authenticated") {
+    super(message);
+    this.name = "AuthError";
+  }
+}
+
 // ---------- Types ----------
 
 export type User = {
@@ -245,12 +253,6 @@ async function request<T>(
         body,
       });
 
-      // On 401/403 auth failures, clear tokens and redirect to login
-      if ((response.status === 401 || response.status === 403) && typeof window !== "undefined") {
-        clearTokens();
-        window.location.href = "/login";
-      }
-
       const message =
         body &&
         typeof body === "object" &&
@@ -258,6 +260,12 @@ async function request<T>(
         typeof (body as { detail: unknown }).detail === "string"
           ? (body as { detail: string }).detail
           : response.statusText || "Something went wrong.";
+
+      if ((response.status === 401 || response.status === 403) && typeof window !== "undefined") {
+        clearTokens();
+        throw new AuthError(message);
+      }
+
       throw new Error(message);
     }
 

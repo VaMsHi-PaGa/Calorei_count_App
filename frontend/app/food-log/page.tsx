@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { AppShell } from "@/components/AppShell";
 import { TopBar } from "@/components/TopBar";
 import { FoodLogger } from "@/components/FoodLogger";
@@ -13,6 +14,7 @@ import {
   getFoodLogs,
   getGoal,
   logFood,
+  AuthError,
   type DashboardData,
   type FoodLog,
   type UserGoal,
@@ -27,7 +29,8 @@ export default function FoodLogPage() {
 }
 
 function FoodLogContent() {
-  const { user } = useUser();
+  const { user, logout } = useUser();
+  const router = useRouter();
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
   const [goal, setGoal] = useState<UserGoal | null>(null);
   const [allLogs, setAllLogs] = useState<FoodLog[]>([]);
@@ -38,6 +41,7 @@ function FoodLogContent() {
   const [activeTab, setActiveTab] = useState<"today" | "history">("today");
 
   useEffect(() => {
+    if (!user?.id) return;
     let cancelled = false;
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true);
@@ -53,7 +57,13 @@ function FoodLogContent() {
         setGoal(g);
       })
       .catch((err) => {
-        if (!cancelled) setError(err.message ?? "Failed to load.");
+        if (cancelled) return;
+        if (err instanceof AuthError) {
+          logout();
+          router.replace("/login");
+        } else {
+          setError(err.message ?? "Failed to load.");
+        }
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -61,7 +71,7 @@ function FoodLogContent() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [user?.id, logout, router]);
 
   const handleSubmit = async (text: string) => {
     setFoodLoading(true);
