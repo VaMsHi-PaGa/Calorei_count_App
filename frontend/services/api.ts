@@ -32,6 +32,33 @@ export type User = {
   height: number;
   age: number;
   gender: string;
+  dietary_preference: string | null;
+  activity_level: string | null;
+  onboarding_complete: boolean;
+};
+
+export type StreakData = {
+  food_streak: number;
+  food_best_streak: number;
+  food_last_logged: string | null;
+  water_streak: number;
+  water_best_streak: number;
+  water_last_logged: string | null;
+  weight_streak: number;
+  weight_best_streak: number;
+  weight_last_logged: string | null;
+};
+
+export type WeeklyDay = {
+  avg_calories: number;
+  avg_protein: number;
+  avg_weight: number;
+};
+
+export type WeeklySummary = {
+  this_week: WeeklyDay;
+  last_week: WeeklyDay;
+  week_start: string;
 };
 
 export type AuthResponse = {
@@ -429,5 +456,23 @@ export function getReportHealth() {
     services: Record<string, string>;
   }>("/api/reports/health", {
     cache: "no-store",
+  });
+}
+
+export function getStreaks() {
+  return request<StreakData>("/api/streaks", { cache: "no-store" });
+}
+
+export function getWeeklySummary() {
+  return request<WeeklySummary>("/api/reports/weekly-summary", { cache: "no-store" });
+}
+
+export function completeOnboarding(data: {
+  dietary_preference?: string;
+  activity_level?: string;
+}) {
+  return request<{ ok: boolean; onboarding_complete: boolean }>("/users/me/onboarding", {
+    method: "PATCH",
+    body: JSON.stringify(data),
   });
 }

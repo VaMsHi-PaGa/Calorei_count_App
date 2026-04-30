@@ -28,6 +28,9 @@ class UserRead(BaseModel):
     height: float
     age: int
     gender: str
+    dietary_preference: str | None = None
+    activity_level: str | None = None
+    onboarding_complete: bool = False
 
 
 class FoodLogCreate(BaseModel):
@@ -142,3 +145,24 @@ class PasswordResetRequest(BaseModel):
 class PasswordResetConfirm(BaseModel):
     token: str
     new_password: str = Field(min_length=8, description="Minimum 8 characters")
+
+
+class StreakRead(BaseModel):
+    food_streak: int
+    food_best_streak: int
+    water_streak: int
+    water_best_streak: int
+    weight_streak: int
+    weight_best_streak: int
+
+
+class WeeklySummaryDay(BaseModel):
+    avg_calories: float
+    avg_protein: float
+    avg_weight: float
+
+
+class WeeklySummary(BaseModel):
+    this_week: WeeklySummaryDay
+    last_week: WeeklySummaryDay
+    week_start: str

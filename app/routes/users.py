@@ -88,6 +88,30 @@ def update_user_profile(
     return current_user
 
 
+@router.get("/me", response_model=UserRead)
+def get_current_user_profile(
+    current_user: User = Depends(get_current_user),
+):
+    return current_user
+
+
+@router.patch("/me/onboarding")
+def complete_onboarding(
+    payload: dict,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Save onboarding choices: dietary_preference, activity_level; mark onboarding_complete."""
+    if "dietary_preference" in payload:
+        current_user.dietary_preference = payload["dietary_preference"]
+    if "activity_level" in payload:
+        current_user.activity_level = payload["activity_level"]
+    current_user.onboarding_complete = True
+    db.commit()
+    db.refresh(current_user)
+    return {"ok": True, "onboarding_complete": True}
+
+
 @router.delete("/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_user(
     user_id: int,

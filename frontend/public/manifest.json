@@ -1,0 +1,37 @@
+{
+  "name": "FitTrack — AI Fitness Coach",
+  "short_name": "FitTrack",
+  "description": "AI-powered nutrition, weight, and fitness tracking",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#06b6d4",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["health", "fitness", "lifestyle"],
+  "shortcuts": [
+    {
+      "name": "Log Food",
+      "url": "/food-log",
+      "description": "Quickly log a meal"
+    },
+    {
+      "name": "Log Weight",
+      "url": "/weight",
+      "description": "Record today's weight"
+    }
+  ]
+}

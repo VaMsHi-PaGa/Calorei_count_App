@@ -7,13 +7,28 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+from sqlalchemy import text
 from app.db.database import Base, engine
-from app.routes import auth, dashboard, food_log, users, weight_log, goals, reports
+from app.models import FoodLog, User, WeightLog, UserGoal  # noqa: F401
+from app.models.user_streak import UserStreak  # noqa: F401
+from app.routes import auth, dashboard, food_log, users, weight_log, goals, reports, streaks
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     Base.metadata.create_all(bind=engine)
+    with engine.connect() as conn:
+        migrations = [
+            "ALTER TABLE users ADD COLUMN dietary_preference VARCHAR",
+            "ALTER TABLE users ADD COLUMN activity_level VARCHAR",
+            "ALTER TABLE users ADD COLUMN onboarding_complete BOOLEAN DEFAULT FALSE",
+        ]
+        for sql in migrations:
+            try:
+                conn.execute(text(sql))
+                conn.commit()
+            except Exception:
+                pass  # column already exists
     yield
 
 
@@ -44,6 +59,7 @@ app.include_router(weight_log.router)
 app.include_router(dashboard.router)
 app.include_router(goals.router)
 app.include_router(reports.router)
+app.include_router(streaks.router)
 
 
 @app.get("/")

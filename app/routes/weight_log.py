@@ -8,6 +8,7 @@ from app.middleware.auth import get_current_user
 from app.models.user import User
 from app.models.weight_log import WeightLog
 from app.schemas import WeightLogCreate, WeightLogRead
+from app.services.streaks import update_streak
 
 router = APIRouter(prefix="/weight-log", tags=["weight-log"])
 
@@ -30,6 +31,7 @@ def create_weight_log(
     db.add(weight_log)
     db.commit()
     db.refresh(weight_log)
+    update_streak(db, current_user.id, "weight")
     return weight_log
 
 

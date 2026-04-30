@@ -15,6 +15,8 @@ import { MacroChart } from "@/components/MacroChart";
 import { InsightCard } from "@/components/InsightCard";
 import { GoalCard } from "@/components/GoalCard";
 import { WaterTracker } from "@/components/WaterTracker";
+import { StreakWidget } from "@/components/StreakWidget";
+import { WeeklyProgress } from "@/components/WeeklyProgress";
 import { useUser } from "@/components/UserProvider";
 import {
   FlameIcon,
@@ -333,6 +335,10 @@ function DashboardContent() {
               </div>
             </Card>
           )}
+
+          <StreakWidget />
+
+          <WeeklyProgress />
 
           {userId !== null && <WaterTracker userId={userId} />}
 
